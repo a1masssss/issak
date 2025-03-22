@@ -1,0 +1,99 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>{% block title %}Workspace{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <!-- Sidebar toggle button -->
+    <button type="button" id="sidebarCollapse" class="btn btn-dark">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Overlay for closing sidebar on outside click -->
+    <div class="overlay"></div>
+
+    <!-- Sidebar -->
+    <div id="sidebar">
+        <div class="sidebar-header">
+            <h3 class="text-light">Menu</h3>
+        </div>
+        
+        <ul class="list-unstyled components">
+            <li>
+                <a href="{% url 'home' %}"><i class="fas fa-home sidebar-icon"></i>Home</a>
+            </li>
+            {% if user.is_authenticated %}
+            <li>
+                <a href="{% url 'upload_page' %}"><i class="fas fa-folder-open sidebar-icon"></i>Workspace</a>
+            </li>
+            <div class="sidebar-divider"></div>
+            <li>
+                <form action="{% url 'logout' %}" method="POST">
+                    {% csrf_token %}
+                    <button class="btn btn-link text-light text-decoration-none ps-2" type="submit">
+                        <i class="fas fa-sign-out-alt sidebar-icon"></i>Logout
+                    </button>
+                </form>
+            </li>
+            {% else %}
+            <li>
+                <a href="{% url 'login' %}"><i class="fas fa-sign-in-alt sidebar-icon"></i>Login</a>
+            </li>
+            <li>
+                <a href="{% url 'register' %}"><i class="fas fa-user-plus sidebar-icon"></i>Sign Up</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <!-- Page Content -->
+    <div id="content">
+        <div class="container mt-4">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+            const sidebarCollapse = document.getElementById('sidebarCollapse');
+            const overlay = document.querySelector('.overlay');
+            
+            // Toggle sidebar
+            sidebarCollapse.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                content.classList.toggle('active');
+                overlay.classList.toggle('active');
+            });
+            
+            // Close sidebar when clicking on overlay
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+                content.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+            
+            // Close sidebar when clicking on a link (for mobile)
+            document.querySelectorAll('#sidebar a').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('active');
+                        content.classList.remove('active');
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

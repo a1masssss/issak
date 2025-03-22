@@ -1,0 +1,134 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Content Summarizer</h2>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+
+    <!-- Bootstrap Tabs -->
+    <ul class="nav nav-tabs mb-4" id="contentTabs">
+        <li class="nav-item">
+            <a class="nav-link active" id="upload-tab" data-bs-toggle="tab" href="#pdf-form">Upload</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="youtube-tab" data-bs-toggle="tab" href="#youtube-form">Link</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="text-tab" data-bs-toggle="tab" href="#text-form">Text</a>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- PDF Upload Form -->
+        <div id="pdf-form" class="tab-pane fade show active">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">Upload File</h4>
+                </div>
+                <div class="card-body">
+                    <form action="{% url 'upload_file' %}" id="pdf-upload-dropzone" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ pdf_form|crispy }}
+                        <button type="submit" class="btn btn-primary w-100 mt-3">Summarize File</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- YouTube Link Form -->
+        <div id="youtube-form" class="tab-pane fade">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">Summarize YouTube Video</h4>
+                </div>
+                <div class="card-body">
+                    <form action="{% url 'submit_youtube' %}" method="post">
+                        {% csrf_token %}
+                        {{ youtube_form|crispy }}
+                        <button type="submit" class="btn btn-primary w-100 mt-3">Summarize Video</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Text Form -->
+        <div id="text-form" class="tab-pane fade">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">Summarize Text</h4>
+                </div>
+                <div class="card-body">
+                    <form action="{% url 'submit_text' %}" method="post">
+                        {% csrf_token %}
+                        {{ text_form|crispy }}
+                        <button type="submit" class="btn btn-primary w-100 mt-3">Summarize Text</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loading-indicator" class="text-center d-none mt-4">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Processing your content. This may take a moment...</p>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const loadingIndicator = document.getElementById('loading-indicator');
+
+        // ✅ Show loading indicator when any form is submitted
+        document.querySelectorAll("form").forEach(form => {
+            form.addEventListener("submit", function() {
+                loadingIndicator.classList.remove("d-none");
+            });
+        });
+
+        // ✅ Ensure Bootstrap Tabs work correctly
+        const contentTabs = document.querySelectorAll(".nav-link");
+        contentTabs.forEach(tab => {
+            tab.addEventListener("click", function(event) {
+                event.preventDefault();  // Prevents default anchor behavior
+
+                // Remove 'active' class from all tabs
+                contentTabs.forEach(t => t.classList.remove("active"));
+                this.classList.add("active");
+
+                // Hide all tab panes
+                document.querySelectorAll(".tab-pane").forEach(pane => pane.classList.remove("show", "active"));
+
+                // Show the selected tab
+                const targetPane = document.querySelector(this.getAttribute("href"));
+                targetPane.classList.add("show", "active");
+            });
+        });
+
+        // ✅ Character Counter for Text Input
+        const textInput = document.querySelector("#text-form textarea");
+        const charLeft = document.createElement("div");
+        charLeft.className = "text-muted mt-2";
+        charLeft.innerHTML = `<span id="char-count">5000</span> characters left`;
+
+        if (textInput) {
+            textInput.parentNode.appendChild(charLeft);  // Append the counter below textarea
+
+            textInput.addEventListener("input", function() {
+                const maxChars = 5000;
+                let remaining = maxChars - textInput.value.length;
+                document.getElementById("char-count").textContent = remaining.toLocaleString();
+            });
+        }
+    });
+</script>
+
+
+{% endblock %}
+{% endblock %}

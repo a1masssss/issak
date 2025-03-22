@@ -1,0 +1,70 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+{% block content %}
+
+</head>
+<body>
+    <div class="summary-card">
+        <div class="summary-header">
+            <h1>Youtube Summary</h1>
+            <link rel="stylesheet" href="{% static 'styles.css' %}">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+        </div>
+
+        <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs mb-4" id="contentTabs">
+        <li class="nav-item">
+            <a class="nav-link active" id="note-tab" data-bs-toggle="tab" href="#note-form">AI Note</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="chat-tab" data-bs-toggle="tab" href="#chat-form">AI Chat</a>
+        </li>
+    </ul>
+
+    <div class="summary-body">
+
+        <!-- Tabs Content -->
+        <div class="tab-content">
+            <!-- AI Note Section -->
+            <div class="tab-pane fade show active" id="note-form">
+                <div class="summary-content">
+                    <div class="summary-title-container">
+                        <h2 class="summary-title">
+                            <i class="fas fa-file-alt"></i> Summary
+                        </h2>
+                        <button class="copy-btn" onclick="copySummary()">
+                            <i class="fa-solid fa-copy"></i>
+                        </button>
+                    </div>
+                    <p class="summary-text" id="summary-text">
+                        {{ summary }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- AI Chat Section -->
+            <div class="tab-pane fade" id="chat-form">
+                <div class="chat-container">
+                    <h2>Chat with AI</h2>
+                    <div class="chat-box" id="chat-box"></div>
+                    <input type="text" id="user-input" class="form-control" placeholder="Ask something...">
+                    <button onclick="sendMessage()" class="btn btn-primary mt-2">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function copySummary() {
+        const summaryText = document.getElementById("summary-text").innerText;
+        navigator.clipboard.writeText(summaryText).then(() => {
+            alert("Summary copied to clipboard!");
+        }).catch(err => {
+            console.error("Failed to copy text:", err);
+        });
+    }
+</script>
+{% endblock %}
