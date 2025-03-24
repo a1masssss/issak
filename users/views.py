@@ -1,15 +1,21 @@
 from django.shortcuts import render
 from django.views.generic import CreateView
 from django.urls import reverse_lazy
-from .forms import UserRegisterForm
+from .forms import UserRegisterForm, MyProfileForm
 from django.shortcuts import redirect
 from .models import EmailActivation, User
 from django.views.generic import FormView   
-from .forms import CustomAuthenticationForm
+from .forms import CustomAuthenticationForm, MyProfileForm
 from django.contrib.auth import authenticate, login
 import os 
+
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
+
+from django.http import JsonResponse
 
 
 def home(request):
@@ -74,3 +80,25 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
 
 
 
+
+@login_required
+def update_profile(request):
+    if request.method == 'POST':
+        user = request.user
+        user.first_name = request.POST.get('first_name', '')
+        user.last_name = request.POST.get('last_name', '')
+        email = request.POST.get('email', '')
+
+        if email and email != user.email:
+            if not User.objects.filter(email=email).exists():
+                user.email = email
+
+        user.save()
+        messages.success(request, "Profile updated successfully")
+
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': True, 'message': 'Profile updated successfully'})
+
+        return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+    return redirect('home')

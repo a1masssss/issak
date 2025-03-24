@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
-from .views import SingUpView, activate_user
+from .views import SingUpView, activate_user, update_profile
 from .views import CustomLoginView  
 from users.views import ResetPasswordView
 
@@ -12,6 +12,7 @@ urlpatterns = [
     path("logout/", auth_views.LogoutView.as_view(template_name="users/logout.html", next_page='login'), name="logout"),
     path('activate/<str:token>/<int:id>/', activate_user, name = 'activate'),
     path('password_reset/', ResetPasswordView.as_view(), name= 'password_reset'),
+    path('update-profile', views.update_profile, name = 'update_profile')
 
 
 ]

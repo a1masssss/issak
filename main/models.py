@@ -1,11 +1,12 @@
 from django.db import models
+import uuid
 
 class PDFDocument(models.Model):
     file = models.FileField(upload_to='uploads/pdfs/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"PDF {self.id} - {self.file.name}"
+        return f"PDF {self.id}"
 
 
 class Video(models.Model):

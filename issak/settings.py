@@ -188,10 +188,6 @@ OPENAI_API_KEY = "sk-proj-WGfXjK8pLLTyS4hGe77JZ0PMW0Z-P-G6XDr_hMKavyMFJIlpXwZDS5
 
 
 
-
-
-
-
 ANTHROPIC_API_KEY = "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"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
@@ -208,6 +204,10 @@ SOCIALACCOUNT_ADAPTER = "users.adapters.CustomSocialAccountAdapter"
 
 
 
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Store sessions in database
+SESSION_COOKIE_AGE = 3600 * 24 * 1  # 1 day
+# SESSION_SAVE_EVERY_REQUEST = True  # Update session 
 
 # SITE_DOMAIN = "127.0.0.1:8000"
 # SITE_PROTOCOL = "http"

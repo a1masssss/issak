@@ -14,16 +14,23 @@ from .forms import PDFUploadForm, TextForm, YouTubeForm
 import uuid
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-
-
-from django.shortcuts import render
-import json
+from anthropic import Anthropic
 from django.views.decorators.csrf import csrf_exempt
-from django.utils.safestring import mark_safe
+from django.utils.decorators import method_decorator
+import logging
+import json
+import openai
+import yt_dlp
+import uuid
+import os
+from django.http import StreamingHttpResponse, JsonResponse
+from django.views import View
 
 # Initialize API clients
 anthropic_client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 openai.api_key = settings.OPENAI_API_KEY
+
+logger = logging.getLogger(__name__)
 
 # Summarize text using Anthropic API with more detailed output
 def summarize_with_anthropic(text):
@@ -35,34 +42,48 @@ def summarize_with_anthropic(text):
     )
     return response.content[0].text.strip()
 
-# Transcribe audio using OpenAI Whisper API with full content extraction
 def transcribe_audio_openai(audio_path):
-    client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
+    openai.api_key = settings.OPENAI_API_KEY
     with open(audio_path, "rb") as audio_file:
-        transcript = client.audio.transcriptions.create(
+        transcript = openai.Audio.transcribe(
             model="whisper-1",
-            file    =audio_file
+            file=audio_file
         )
-    return transcript.text
+    return transcript["text"]
 
-# Extract text from PDF using PyMuPDF
+
+
 def extract_pdf_text(pdf_path):
     doc = pymupdf.open(pdf_path)
     return "\n".join([page.get_text("text") for page in doc])
 
-# Download audio from YouTube efficiently
+
+
 def download_youtube_audio(youtube_url):
-    filename = f"audio_{uuid.uuid4()}.m4a"  # Use m4a to avoid extra conversion
+    unique_id = str(uuid.uuid4())
     ydl_opts = {
-        'format': 'bestaudio[ext=m4a]/bestaudio/best',
-        'outtmpl': filename,
+        'format': 'bestaudio/best',
+        # Use '%(ext)s' to let yt-dlp pick the initial extension,
+        # then have ffmpeg rename it to ".mp3" via postprocessor.
+        'outtmpl': f'audio_{unique_id}.%(ext)s',
         'noplaylist': True,
+        'postprocessors': [
+            {
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192'
+            }
+        ],
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([youtube_url])
+        info_dict = ydl.extract_info(youtube_url, download=True)
 
-    return filename
+        # After postprocessing, the final filename is stored here:
+        final_filename = info_dict["requested_downloads"][0]["filepath"]
+        return final_filename
+
+
 
 class UploadPDFView(View):
     def post(self, request, *args, **kwargs):
@@ -78,10 +99,13 @@ class UploadPDFView(View):
 
         # Extract text and generate summary
         text = extract_pdf_text(pdf_doc.file.path)
+        
+        # Store the full text in session for chat functionality
+        request.session['pdf_text'] = text
+        
         summary = summarize_with_anthropic(text[:800000])
 
-        return render(self.request, 'summarizer/detail_pdf.html', {'pdf_name': file_name, 'summary':summary})
-
+        return render(self.request, 'summarizer/detail_pdf.html', {'pdf_name': file_name, 'summary': summary})
 class SubmitYouTubeView(FormView):
     template_name = "summarizer/upload.html"
     form_class = YouTubeForm
@@ -103,10 +127,9 @@ class SubmitYouTubeView(FormView):
         return render(self.request, 'summarizer/detail_youtube.html', {
             'youtube_url': youtube_url, 
             'summary': summary
-            
+
 
         })
-
 
 class TextFormView(FormView):
     template_name = "summarizer/upload.html"
@@ -117,6 +140,9 @@ class TextFormView(FormView):
         text = form.cleaned_data["text"]
         summary = summarize_with_anthropic(text[:800000]) 
         return render(self.request, 'summarizer/detail_text.html', {'summary': summary})
+    
+
+
     
 class UploadPageView(View):
     def get(self, request):
@@ -129,45 +155,68 @@ class UploadPageView(View):
 
 
 
-
 class ChatBotView(View):
-    @csrf_exempt
     def post(self, request, *args, **kwargs):
         try:
+            # Parse incoming JSON request
             data = json.loads(request.body)
-            user_message = data.get("message", "")
+            user_message = data.get("message", "").strip()
 
             if not user_message:
                 return JsonResponse({"error": "Message cannot be empty"}, status=400)
-
-            # Retrieve stored PDF text
+            
+            # Get stored PDF text
             pdf_text = request.session.get("pdf_text", "")
+            if not pdf_text:
+                return JsonResponse({
+                    "response": "No transcript found in session"
+                }, status=400)
 
-            # Construct AI prompt with document context
+            # Debug: Log the received message
+            logger.info(f"Received user message: {user_message}")
+
+            # Construct prompt for OpenAI
             prompt = f"""
-            You are an AI assistant helping a user understand a document. Here is the extracted text from the PDF:
-            
-            {pdf_text[:8000]}  # Limit the context to avoid token overflow
-            
-            Now, answer the following user question based on the document:
+            You are an AI assistant helping a user understand a text.
+            Text:
+            {pdf_text[:10000]}  # Limit to 10,000 chars for OpenAI request
+
+            The user asks:
             {user_message}
+
+            Please answer based ONLY on the text above.
             """
 
-            # Send message to Claude 3 Haiku
-            response = anthropic_client.messages.create(
-                model="claude-3-haiku-20240307",
-                max_tokens=256,
-                temperature=0.5,
-                messages=[{"role": "user", "content": prompt}]
-            )
+            # Debug: Log the constructed prompt
+            logger.info(f"Generated prompt: {prompt[:200]}...")  # Log the first 200 chars
 
-            ai_reply = response.content[0].text.strip()
+            def event_stream():
+                try:
+                    response_iter = openai.ChatCompletion.create(
+                        model="gpt-4o-mini",
+                        messages=[{"role": "user", "content": prompt}],
+                        temperature=0.7,
+                        stream=True     
+                    )
 
-            # Return AI response as HTML snippet
-            return JsonResponse({"response": ai_reply})
+                    for chunk in response_iter:
+                        delta = chunk["choices"][0]["delta"]
+                        if "content" in delta:
+                            text_piece = delta["content"]
+                            yield f"data: {text_piece}\n\n"
 
+                except Exception as e:
+                    logger.error(f"Streaming error: {str(e)}")
+                    yield f"data: [Error: {str(e)}]\n\n"
+
+            return StreamingHttpResponse(event_stream(), content_type='text/event-stream')
+
+        except json.JSONDecodeError:
+            logger.error("Invalid JSON in request body")
+            return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
+        except openai.error.AuthenticationError:
+            logger.error("Invalid OpenAI API key")
+            return JsonResponse({"error": "OpenAI API authentication failed"}, status=500)
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
-
-
-
+            logger.error(f"Unexpected error: {str(e)}")
+            return JsonResponse({"error": "An unexpected error occurred"}, status=500)

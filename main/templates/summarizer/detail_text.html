@@ -11,48 +11,54 @@
         </div>
 
         <!-- Tabs Navigation -->
-    <ul class="nav nav-tabs mb-4" id="contentTabs">
-        <li class="nav-item">
-            <a class="nav-link active" id="note-tab" data-bs-toggle="tab" href="#note-form">AI Note</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="chat-tab" data-bs-toggle="tab" href="#chat-form">AI Chat</a>
-        </li>
-    </ul>
+        <ul class="nav nav-tabs mb-4" id="contentTabs">
+            <li class="nav-item">
+                <a class="nav-link active" id="note-tab" data-bs-toggle="tab" href="#note-form">AI Note</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="chat-tab" data-bs-toggle="tab" href="#chat-form">AI Chat</a>
+            </li>
+        </ul>
 
-    <div class="summary-body">
-
-        <!-- Tabs Content -->
-        <div class="tab-content">
-            <!-- AI Note Section -->
-            <div class="tab-pane fade show active" id="note-form">
-                <div class="summary-content">
-                    <div class="summary-title-container">
-                        <h2 class="summary-title">
-                            <i class="fas fa-file-alt"></i> Summary
-                        </h2>
-                        <button class="copy-btn" onclick="copySummary()">
-                            <i class="fa-solid fa-copy"></i>
-                        </button>
+        <div class="summary-body">
+            <!-- Tabs Content -->
+            <div class="tab-content">
+                <!-- AI Note Section -->
+                <div class="tab-pane fade show active" id="note-form">
+                    <div class="summary-content">
+                        <div class="summary-title-container">
+                            <h2 class="summary-title">
+                                <i class="fas fa-file-alt"></i> Summary
+                            </h2>
+                            <button class="copy-btn" onclick="copySummary()">
+                                <i class="fa-solid fa-copy"></i>
+                            </button>
+                        </div>
+                        <p class="summary-text" id="summary-text">
+                            {{ summary }}
+                        </p>
                     </div>
-                    <p class="summary-text" id="summary-text">
-                        {{ summary }}
-                    </p>
                 </div>
-            </div>
 
-            <!-- AI Chat Section -->
-            <div class="tab-pane fade" id="chat-form">
-                <div class="chat-container">
-                    <h2>Chat with AI</h2>
-                    <div class="chat-box" id="chat-box"></div>
-                    <input type="text" id="user-input" class="form-control" placeholder="Ask something...">
-                    <button onclick="sendMessage()" class="btn btn-primary mt-2">Send</button>
+                <!-- AI Chat Section -->
+                <div class="tab-pane fade" id="chat-form">
+                    <div class="chat-container">
+                        <h2>Chat with AI about this text</h2>
+                        <div class="chat-box" id="chat-box">
+                            <div class="chat-message ai-message">
+                                Hello! I'm here to help you understand text you provided. What questions do you have?
+                            </div>
+                        </div>
+                        <div class="chat-input-container">
+                            <input type="text" id="user-input" class="form-control" placeholder="Ask something about the document...">
+                            <button id="send-button" class="btn btn-primary mt-2">Send</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</body>
+    </body>
 
 <!--Copy Button JavaScript -->
 <script>
@@ -65,5 +71,132 @@
         });
     }
 </script>
+
+
+<!-- Chat Functionality (Streaming) -->
+<script>
+    // Get CSRF token from cookies for Django security
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    // Elements
+    const userInputElem = document.getElementById("user-input");
+    const sendButton = document.getElementById("send-button");
+    const chatBox = document.getElementById("chat-box");
+
+    // Send message when button is clicked
+    sendButton.addEventListener("click", sendMessage);
+
+    // Allow sending message by pressing Enter
+    userInputElem.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+    });
+
+    async function sendMessage() {
+const userInput = userInputElem.value.trim();
+if (!userInput) {
+    alert("Message cannot be empty!");
+    return;
+}
+
+userInputElem.disabled = true;
+sendButton.disabled = true;
+
+chatBox.innerHTML += `
+    <div class="chat-message user-message">
+        ${userInput}
+    </div>`;
+
+let loadingDiv = document.createElement("div");
+loadingDiv.className = "chat-message ai-message loading";
+loadingDiv.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
+chatBox.appendChild(loadingDiv);
+chatBox.scrollTop = chatBox.scrollHeight;
+
+try {
+    const response = await fetch("{% url 'chat' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken
+        },
+        body: JSON.stringify({ message: userInput })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Server error: ${response.status} ${response.statusText}`);
+    }
+
+    // Read streaming response
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+
+    chatBox.removeChild(loadingDiv);
+    let aiMessageDiv = document.createElement("div");
+    aiMessageDiv.className = "chat-message ai-message";
+    aiMessageDiv.innerHTML = `<span id="ai-text"></span>`;
+    chatBox.appendChild(aiMessageDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    let aiTextSpan = document.getElementById("ai-text");
+    let partialData = "";
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+            break;
+        }
+        partialData += decoder.decode(value, { stream: true });
+
+        const sseMessages = partialData.split("\n\n");
+        partialData = sseMessages.pop();
+
+        sseMessages.forEach(msg => {
+            if (msg.startsWith("data: ")) {
+                let chunk = msg.slice("data: ".length);
+                aiTextSpan.textContent += chunk;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        });
+    }
+
+} catch (error) {
+    chatBox.removeChild(loadingDiv);
+    chatBox.innerHTML += `
+        <div class="chat-message error-message">
+            <span>Error:</span> ${error.message}
+        </div>`;
+    console.error("Error:", error);
+}
+
+userInputElem.disabled = false;
+sendButton.disabled = false;
+userInputElem.value = "";
+userInputElem.focus();
+chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+</script>
+
+<!-- Bootstrap JS for Tabs -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
 
 {% endblock %}

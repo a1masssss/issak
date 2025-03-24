@@ -1,8 +1,8 @@
 {% extends 'users/base.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
-{% block content %}
 
+{% block content %}
 <body>
     <div class="summary-card">
         <div class="summary-header">
@@ -12,101 +12,190 @@
         </div>
 
         <!-- Tabs Navigation -->
-    <ul class="nav nav-tabs mb-4" id="contentTabs">
-        <li class="nav-item">
-            <a class="nav-link active" id="note-tab" data-bs-toggle="tab" href="#note-form">AI Note</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="chat-tab" data-bs-toggle="tab" href="#chat-form">AI Chat</a>
-        </li>
-    </ul>
+        <ul class="nav nav-tabs mb-4" id="contentTabs">
+            <li class="nav-item">
+                <a class="nav-link active" id="note-tab" data-bs-toggle="tab" href="#note-form">AI Note</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="chat-tab" data-bs-toggle="tab" href="#chat-form">AI Chat</a>
+            </li>
+        </ul>
 
-    <div class="summary-body">
-
-        <!-- Tabs Content -->
-        <div class="tab-content">
-            <!-- AI Note Section -->
-            <div class="tab-pane fade show active" id="note-form">
-                <div class="summary-content">
-                    <div class="summary-title-container">
-                        <h2 class="summary-title">
-                            <i class="fas fa-file-alt"></i> Summary
-                        </h2>
-                        <button class="copy-btn" onclick="copySummary()">
-                            <i class="fa-solid fa-copy"></i>
-                        </button>
+        <div class="summary-body">
+            <!-- Tabs Content -->
+            <div class="tab-content">
+                <!-- AI Note Section -->
+                <div class="tab-pane fade show active" id="note-form">
+                    <div class="summary-content">
+                        <div class="summary-title-container">
+                            <h2 class="summary-title">
+                                <i class="fas fa-file-alt"></i> Summary
+                            </h2>
+                            <button class="copy-btn" onclick="copySummary()">
+                                <i class="fa-solid fa-copy"></i>
+                            </button>
+                        </div>
+                        <p class="summary-text" id="summary-text">
+                            {{ summary }}
+                        </p>
                     </div>
-                    <p class="summary-text" id="summary-text">
-                        {{ summary }}
-                    </p>
                 </div>
-            </div>
 
-            <!-- AI Chat Section -->
-            <div class="tab-pane fade" id="chat-form">
-                <div class="chat-container">
-                    <h2>Chat with AI</h2>
-                    <div class="chat-box" id="chat-box"></div>
-                    <div class="chat-input-container">
-                        <input type="text" id="user-input" class="form-control" placeholder="Ask something...">
-                        <button onclick="sendMessage()" class="btn btn-primary mt-2">Send</button>
+                <!-- AI Chat Section -->
+                <div class="tab-pane fade" id="chat-form">
+                    <div class="chat-container">
+                        <h2>Chat with AI about this document</h2>
+                        <div class="chat-box" id="chat-box">
+                            <div class="chat-message ai-message">
+                                Hello! I'm here to help you understand this document. What questions do you have?
+                            </div>
+                        </div>
+                        <div class="chat-input-container">
+                            <input type="text" id="user-input" class="form-control" placeholder="Ask something about the document...">
+                            <button id="send-button" class="btn btn-primary mt-2">Send</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</body>
-<!-- Copy Summary Function -->
-<script>
-    function copySummary() {
-        const summaryText = document.getElementById("summary-text").innerText;
-        navigator.clipboard.writeText(summaryText).then(() => {
-            alert("Summary copied to clipboard!");
-        }).catch(err => {
-            console.error("Failed to copy text:", err);
+    </body>
+
+    <!-- Copy Summary Function -->
+    <script>
+        function copySummary() {
+            const summaryText = document.getElementById("summary-text").innerText;
+            navigator.clipboard.writeText(summaryText)
+            .then(() => {
+                alert("Summary copied to clipboard!");
+            })
+            .catch(err => {
+                console.error("Failed to copy text:", err);
+            });
+        }
+    </script>
+
+    <!-- Chat Functionality (Streaming) -->
+    <script>
+        // Get CSRF token from cookies for Django security
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        // Elements
+        const userInputElem = document.getElementById("user-input");
+        const sendButton = document.getElementById("send-button");
+        const chatBox = document.getElementById("chat-box");
+
+        // Send message when button is clicked
+        sendButton.addEventListener("click", sendMessage);
+
+        // Allow sending message by pressing Enter
+        userInputElem.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
         });
+
+        async function sendMessage() {
+    const userInput = userInputElem.value.trim();
+    if (!userInput) {
+        alert("Message cannot be empty!");
+        return;
     }
-</script>
 
-<script>
-    function sendMessage() {
-        let userInput = document.getElementById("user-input").value.trim();
-        let chatBox = document.getElementById("chat-box");
+    userInputElem.disabled = true;
+    sendButton.disabled = true;
 
-        if (!userInput) return;
+    chatBox.innerHTML += `
+        <div class="chat-message user-message">
+            ${userInput}
+        </div>`;
 
-        // Append user message to chat UI
-        chatBox.innerHTML += `
-            <div class="chat-message user-message">
-                <span>You:</span> ${userInput}
-            </div>`;
+    let loadingDiv = document.createElement("div");
+    loadingDiv.className = "chat-message ai-message loading";
+    loadingDiv.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
+    chatBox.appendChild(loadingDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    try {
+        const response = await fetch("{% url 'chat' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrftoken
+            },
+            body: JSON.stringify({ message: userInput })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status} ${response.statusText}`);
+        }
+
+        // Read streaming response
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+
+        chatBox.removeChild(loadingDiv);
+        let aiMessageDiv = document.createElement("div");
+        aiMessageDiv.className = "chat-message ai-message";
+        aiMessageDiv.innerHTML = `<span id="ai-text"></span>`;
+        chatBox.appendChild(aiMessageDiv);
         chatBox.scrollTop = chatBox.scrollHeight;
 
-        // Send request to backend and get AI response
-        fetch("main/chat/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: userInput })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                chatBox.innerHTML += `<div class="chat-message error-message">${data.error}</div>`;
-            } else {
-                chatBox.innerHTML += `
-                    <div class="chat-message ai-message">
-                        <span>AI:</span> ${data.response}
-                    </div>`;
+        let aiTextSpan = document.getElementById("ai-text");
+        let partialData = "";
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) {
+                break;
             }
-            chatBox.scrollTop = chatBox.scrollHeight;
-            document.getElementById("user-input").value = "";
-        })
-        .catch(error => console.error("Error:", error));
+            partialData += decoder.decode(value, { stream: true });
+
+            const sseMessages = partialData.split("\n\n");
+            partialData = sseMessages.pop();
+
+            sseMessages.forEach(msg => {
+                if (msg.startsWith("data: ")) {
+                    let chunk = msg.slice("data: ".length);
+                    aiTextSpan.textContent += chunk;
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }
+            });
+        }
+
+    } catch (error) {
+        chatBox.removeChild(loadingDiv);
+        chatBox.innerHTML += `
+            <div class="chat-message error-message">
+                <span>Error:</span> ${error.message}
+            </div>`;
+        console.error("Error:", error);
     }
-</script>
 
+    userInputElem.disabled = false;
+    sendButton.disabled = false;
+    userInputElem.value = "";
+    userInputElem.focus();
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
 
-<!-- Bootstrap JS for Tabs -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </script>
+
+    <!-- Bootstrap JS for Tabs -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 {% endblock %}

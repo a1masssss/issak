@@ -55,7 +55,7 @@ class CustomAuthenticationForm(AuthenticationForm):
             'placeholder': 'Password',
             'class': 'form-control',
             'autocomplete': 'new-password',
-            'id': 'password'  # ID for js reference
+            'id': 'password'  # for hiding and showing password
         })
 
         for field in self.fields.values():
@@ -64,6 +64,19 @@ class CustomAuthenticationForm(AuthenticationForm):
 
 
     username = forms.EmailField(label='Email')
+
+
+class MyProfileForm(forms.ModelForm):
+    first_name = forms.CharField(label="", required = False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First name'}))
+    last_name = forms.CharField(label="", required = False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last name'}))
+    email = forms.EmailField(label="", required = True,  widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
+    class Meta:
+        model  = User
+        fields = ('first_name', 'last_name', 'email')
+
+
+
+
 
 class UpdateUserForm(forms.ModelForm):
     class Meta:
