@@ -3,34 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'main/styles.css' %}">
+     <!-- React & ReactDOM -->
+     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+      
+ 
+     <!-- ReactFlow -->
+     <link href="https://unpkg.com/reactflow@11.7.0/dist/style.css" rel="stylesheet" />
+     <script src="https://unpkg.com/reactflow@11.7.0/dist/umd/reactflow.production.min.js"></script>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    
+    {% block head %}
+    {% endblock %}
+
     <title>{% block title %}Django Auth{% endblock %}</title>
+    <style>
+        /* Custom Styling to match second file */
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .text-gradient {
+            background: linear-gradient(45deg, #4e73df, #36b9cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .bg-gradient-primary {
+            background: linear-gradient(45deg, #4e73df, #36b9cc);
+            color: white;
+            padding: 1.25rem 1.5rem;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .navbar-custom {
+            background: linear-gradient(45deg, #4e73df, #36b9cc);
+            padding: 10px 20px;
+        }
+        
+        .navbar-custom .navbar-brand, .navbar-custom .nav-link {
+            color: white !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-custom .nav-link:hover {
+            color: #d1ecf1 !important;
+            transform: translateY(-2px);
+        }
+        
+        .btn-custom {
+            background: linear-gradient(45deg, #4e73df, #36b9cc);
+            border: none;
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-custom:hover {
+            box-shadow: 0 5px 15px rgba(78, 115, 223, 0.3);
+            transform: translateY(-2px);
+        }
+        /* Footer Styling */
+        .footer-custom {
+            background: linear-gradient(45deg, #4e73df, #36b9cc);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+        .footer-custom a {
+            color: #d1ecf1;
+            text-decoration: none;
+        }
+        .footer-custom a:hover {
+            text-decoration: underline;
+        }
+        .footer-heading {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        .social-links a {
+            display: inline-block;
+            margin: 0 8px;
+            color: #fff;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+        .social-links a:hover {
+            transform: translateY(-2px);
+            color: #cce7ea;
+        }
+        .heart {
+            color: #e74c3c;
+            margin: 0 3px;
+        }
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'home' %}">Home</a>
+            <a class="navbar-brand btn btn-xs" href="{% url 'home' %}">Issak</a>
             {% if user.is_authenticated %}
-                <a class="navbar-brand" href="{% url 'upload_page'  %}">Workspace</a>
+                <a class="navbar-brand btn btn-xs" href="{% url 'upload_page' %}">Workspace</a>
+                <a class="navbar-brand btn btn-xs" href="{% url 'notes' %}">My Notes</a>
             {% endif %}
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
-                        <!-- User Profile Dropdown -->
                         <div class="dropdown">
                             {% if user.first_name %}
-                                <button class="btn dropdown-toggle text-light" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="btn btn-custom dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                     {{ user.first_name }} {{ user.last_name }}
                                 </button>
                             {% else %}
-                                <button class="btn dropdown-toggle text-light" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="btn btn-custom dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                     {{ user.email }}
                                 </button>
                             {% endif %}
-
-
                             <ul class="dropdown-menu dropdown-menu-end p-0" aria-labelledby="userDropdown" style="min-width: 320px;">
-                                <!-- Profile Header -->
                                 <li class="dropdown-item d-flex align-items-center p-3 bg-light">
                                     {% if user.socialaccount_set.first and user.socialaccount_set.first.extra_data.picture %}
                                         <img src="{{ user.socialaccount_set.first.extra_data.picture }}" 
@@ -40,20 +148,11 @@
                                             <span class="text-light">{{ user.first_name|first|default:user.email|first|upper }}</span>
                                         </div>
                                     {% endif %}
-                                    {% if user.first_name %}
-                                        <h6 class="mb-0">{{ user.first_name }} {{ user.last_name }}</h6>
-                                    {% else %}
-                                        <h6 class="mb-0">{{ user.email }}</h6>
-                                    {% endif %}
+                                    <h6 class="mb-0">{{ user.first_name|default:user.email }}</h6>
                                 </li>
-                                
                                 <li><hr class="dropdown-divider m-0"></li>
-                                
-                                <!-- Tabbed Content -->
                                 <li class="p-0">
                                     <div class="p-3">
-                                        <!-- Nav tabs -->
-                                       <!-- Nav tabs inside Profile Dropdown -->
                                         <ul class="nav nav-tabs nav-fill" id="profileDropdownTab" role="tablist">
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link active" id="profile-dropdown-info-tab" data-bs-toggle="tab" data-bs-target="#profile-dropdown-info" type="button" role="tab" aria-controls="profile-dropdown-info" aria-selected="true">
@@ -66,10 +165,7 @@
                                                 </button>
                                             </li>
                                         </ul>
-
-                                        <!-- Tab content inside Profile Dropdown -->
                                         <div class="tab-content py-3">
-                                            <!-- Profile Info Tab -->
                                             <div class="tab-pane fade show active" id="profile-dropdown-info" role="tabpanel" aria-labelledby="profile-dropdown-info-tab">
                                                 <div class="mb-2"><strong>Email:</strong> {{ user.email }}</div>
                                                 {% if user.first_name %}
@@ -77,8 +173,6 @@
                                                 {% endif %}
                                                 <div class="mb-2"><strong>Joined:</strong> {{ user.date_joined|date:"M d, Y" }}</div>
                                             </div>
-                                            
-                                            <!-- Edit Profile Tab -->
                                             <div class="tab-pane fade" id="profile-dropdown-edit" role="tabpanel" aria-labelledby="profile-dropdown-edit-tab">
                                                 <form id="profileEditForm" method="post" action="{% url 'update_profile' %}" class="needs-validation" novalidate>
                                                     {% csrf_token %}
@@ -94,31 +188,26 @@
                                                         <label for="email" class="form-label">Email</label>
                                                         <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
                                                     </div>
-                                                    <button type="submit" class="btn btn-primary w-100">Update Profile</button>
+                                                    <button type="submit" class="btn btn-custom w-100">Update Profile</button>
                                                 </form>
                                             </div>
                                         </div>
-
                                     </div>  
                                 </li>
-                                
                                 <li><hr class="dropdown-divider m-0"></li>
-                                
-                                <!-- Logout Button -->
                                 <li>
                                     <form action="{% url 'logout' %}" method="POST" class="d-inline w-100">
                                         {% csrf_token %}
                                         <button class="dropdown-item text-muted p-3" type="submit">
-                                            <i class="bi bi-box-arrow-right me-2"></i> Logout
+                                            <i class="bi bi-box-arrow-right me-2"></i> Log out
                                         </button>
                                     </form>
                                 </li>
                             </ul>
                         </div>
-
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link bg-light text-dark dark-mode-toggle" href="{% url 'login' %}">LOGIN</a>
+                            <a class="nav-link" href="{% url 'login' %}">Login</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'register' %}">Sign up</a>
@@ -128,8 +217,83 @@
             </div>
         </div>
     </nav>
+    
     {% block content %}
+    <div class="container my-5">
+        <div class="text-center">
+            <h1 class="display-4 fw-bold text-gradient">Summarize Anything in Seconds</h1>
+            <p class="lead mt-3 mb-4">Save time and learn faster. Instantly summarize YouTube videos, articles, and PDF files with AI.</p>
+            {%if user.is_authenticated %}
+                <a href="{% url 'upload_page' %}" class="btn btn-custom btn-lg">Get Started</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-custom btn-lg">Get Started</a>
+            {% endif %}
+        </div>
+    
+        <div class="row mt-5 text-center">
+            <div class="col-md-4 mb-4">
+                <div class="p-4 bg-white rounded shadow-sm h-100 card-hover">
+                    <i class="bi bi-file-earmark-pdf-fill fs-1 text-gradient"></i>
+                    <h5 class="mt-3">PDF Documents</h5>
+                    <p class="text-muted">Upload research papers, books, or reports — we’ll break it down into digestible summaries.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="p-4 bg-white rounded shadow-sm h-100 card-hover">
+                    <i class="bi bi-play-btn-fill fs-1 text-gradient"></i>
+                    <h5 class="mt-3">YouTube Videos</h5>
+                    <p class="text-muted">Get the key points from any video, lecture, or podcast — no need to watch the whole thing.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="p-4 bg-white rounded shadow-sm h-100 card-hover">
+                    <i class="bi bi-file-earmark-text-fill fs-1 text-gradient"></i>
+                    <h5 class="mt-3">Articles & Blogs</h5>
+                    <p class="text-muted">Paste a link and get a summary of any article, report, or long read in one click.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+
     {% endblock %}
+
+    {% block footer %}
+    <footer class="footer-custom mt-5">
+        <div class="container">
+            <div class="row justify-content-center mb-3">
+                <div class="col-md-4">
+                    <h5 class="footer-heading">Get in Touch</h5>
+                    <p>We'd love to hear from you! Send us an email at <a href="mailto:almas.issakov.t@gmail.com">almas.issakov.t@gmail.com</a></p>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="footer-heading">Follow Us</h5>
+                    <div class="social-links">
+                        <a href="#"><i class="bi bi-facebook"></i></a>
+                        <a href="#"><i class="bi bi-twitter"></i></a>
+                        <a href="#"><i class="bi bi-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="footer-heading">Subscribe</h5>
+                    <p>Stay updated with our latest news!</p>
+                    <form>
+                        <div class="mb-2">
+                            <input type="email" class="form-control" placeholder="Enter your email">
+                        </div>
+                        <button class="btn btn-custom w-100">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <hr>
+            <p class="mb-0">
+                </span> &copy; 2025 Issak Website. All rights reserved.<br>
+                <a href="/privacy">Privacy Policy</a> | <a href="/terms">Terms of Service</a>
+            </p>
+        </div>
+    </footer>
+    
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -225,8 +389,7 @@
     }
 });
 
-
 </script>
-
+{% endblock %}
 </body>
 </html>

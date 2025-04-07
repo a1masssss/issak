@@ -1,4 +1,5 @@
 from django import forms
+from .models import SummaryNotes
 
 
 class BaseForm(forms.Form):
@@ -12,7 +13,7 @@ class BaseForm(forms.Form):
 class PDFUploadForm(BaseForm):
     file = forms.FileField(
         label="Select a PDF file",
-        widget=forms.ClearableFileInput(attrs={"accept": ".pdf"})
+        widget=forms.ClearableFileInput(attrs={"accept": ".pdf, .docx, .csv, .json, .xlsx"})
         
     )
 
@@ -26,4 +27,16 @@ class TextForm(BaseForm):
         widget=forms.Textarea(attrs={"placeholder": "Enter text here"}), 
     )
     
+
+class ArticleForm(BaseForm):
+    url = forms.URLField(
+        label= "Article URL", 
+        widget=forms.URLInput(attrs={"placeholder": 'https://link-to-your-article'})
+    )
         
+
+
+class SummaryForm(forms.ModelForm):
+    class Meta:
+        model = SummaryNotes
+        fields = ['title', 'content',]

@@ -15,6 +15,8 @@ import os
 
 from django.conf import settings
 
+from dotenv import load_dotenv
+load_dotenv()
 
 
 
@@ -30,14 +32,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-_@9wib)qvdud+^c4uf7^vzg)^$q1=i@vc##2c3^8wc=7&b$9bm'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
+SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1").split(',')  
 
 # Application definition
 SITE_ID = 2
@@ -48,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar',
+    'rest_framework',
     'main',
     'users',
     'crispy_forms',
@@ -83,6 +82,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "allauth.account.middleware.AccountMiddleware",
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'issak.urls'
@@ -90,7 +90,7 @@ ROOT_URLCONF = 'issak.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -112,11 +112,22 @@ WSGI_APPLICATION = 'issak.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'IssakDB',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
+    }
+}
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
     }
 }
 
@@ -143,9 +154,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True #shifrovamie
-EMAIL_HOST_USER = 'almas.issakov.t@gmail.com'
-EMAIL_HOST_PASSWORD = 'psgdmplqzmcitcqs'
-DEFAULT_FROM_EMAIL = 'almas.issakov.t@mail.com'
+EMAIL_HOST_USER = os.getenv('EMAIL_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 AUTH_USER_MODEL = "users.User"
 
 
@@ -171,6 +182,13 @@ AUTHENTICATION_BACKENDS = (
 )
 
 STATIC_URL = '/static/'
+# Указываем Django, где искать исходные статические файлы
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'main', 'static'),
+]
+# Куда складывать все файлы при сборке (в проде)
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
 AUTH_USER_MODEL = 'users.User'
 
 
@@ -181,14 +199,11 @@ AUTH_USER_MODEL = 'users.User'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = "media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_ROOT = os.path.join(BASE_DIR, 'main',"media")
 
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 
-
-
-
-ANTHROPIC_API_KEY = "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"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 SOCIALACCOUNT_AUTO_SIGNUP = True
@@ -202,12 +217,13 @@ ACCOUNT_EMAIL_VERIFICATION = "optional"  # Change to "optional" if needed
 ACCOUNT_ADAPTER = "users.adapters.CustomAccountAdapter"
 SOCIALACCOUNT_ADAPTER = "users.adapters.CustomSocialAccountAdapter"
 
+DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024  # 50MB limit
 
 
-
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Store sessions in database
-SESSION_COOKIE_AGE = 3600 * 24 * 1  # 1 day
+# SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Store sessions in database
+# SESSION_COOKIE_AGE = 3600 * 24 * 1  # 1 day
 # SESSION_SAVE_EVERY_REQUEST = True  # Update session 
 
 # SITE_DOMAIN = "127.0.0.1:8000"
 # SITE_PROTOCOL = "http"
+

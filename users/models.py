@@ -3,6 +3,7 @@ from django.utils.crypto import get_random_string
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.mail import send_mail
+import uuid
 
 get_random_token = partial(get_random_string, 100)
 
@@ -13,8 +14,6 @@ class UserManager(BaseUserManager):
         if activation: 
             return user
         return None
-
-
 
 class User(AbstractUser):
     username = None
@@ -58,4 +57,4 @@ class EmailActivation(models.Model):
 
 
 
-    
+

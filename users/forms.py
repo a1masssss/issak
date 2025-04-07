@@ -74,10 +74,6 @@ class MyProfileForm(forms.ModelForm):
         model  = User
         fields = ('first_name', 'last_name', 'email')
 
-
-
-
-
 class UpdateUserForm(forms.ModelForm):
     class Meta:
         model = User
@@ -90,3 +86,6 @@ class UpdateUserForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+    
+
+    

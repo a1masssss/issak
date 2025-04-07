@@ -1,0 +1,14 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+    <title>{% block title %} Summary {% endblock %}</title>
+    <h1>{{ summary.title }}</h1>
+    <p>{{ summary.content }}</p>
+
+    {% if summary.source_url %}
+        <a href="{{ summary.source_url }}" target="_blank">Source</a>
+    {% endif %}
+
+    <br><br>
+    <a href="{% url 'notes' %}">Back to notes</a>
+{% endblock %}

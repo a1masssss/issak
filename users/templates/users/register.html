@@ -1,28 +1,32 @@
-{% extends 'users/base.html' %}
+{% extends 'users/base_auth.html' %}
 {% load crispy_forms_tags %}
 {% load socialaccount %}
 {% load static %}
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'styles.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+
 <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
-    <div class="card shadow-lg p-4" style="max-width: 400px; width: 100%; border-radius: 12px;">
-        <!-- Tab Navigation -->
-        <div class="tab-navigation mb-4">
-            <div class="d-flex border-bottom">
-                <div class="p-3 flex-fill text-center">
-                    <a href="{% url 'login' %}" class="text-decoration-none text-dark">Login</a>
-                </div>
-                <div class="p-3 flex-fill text-center fw-bold" style="border-bottom: 3px solid #4285f4;">
-                    <a href="{% url 'register' %}" class="text-decoration-none text-dark">Register</a>
-                </div>
-            </div>
+    <div class="row w-100 m-0">
+        <!-- Left side: Image covering full height -->
+        <div class="col-md-6 p-0" style="height: 100vh; overflow: hidden;">
+            <img src="{% static 'images/issak_image_2.png' %}" alt="Login Illustration" class="w-100" style="object-fit: cover;">
         </div>
 
-        <!-- Registration Form -->
-        <form method="POST">
-            {% csrf_token %}
-            {{ form|crispy }}
+        <div class="col-md-6 d-flex justify-content-center align-items-center">
+            <div class="p-4" style="max-width: 400px; width: 100%; border-radius: 12px;">
+        
+                <!-- Add heading and description here -->
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold">Create your account</h3>
+                    <p class="text-muted">Welcome! Please fill in the details to get started.</p>
+                </div>
+                <form method="POST">
+                {% csrf_token %}
+                {{ form|crispy }}
+                
 
             <!-- Rounded Sign Up Button -->
             <div class="text-center">

@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.views.generic import CreateView
 from django.urls import reverse_lazy
 from .forms import UserRegisterForm, MyProfileForm
