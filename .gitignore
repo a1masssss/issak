@@ -1,3 +1,8 @@
-.venv
+
 .env
 client_secret_372337726928-bs8kaco6ran15ac3rdsnghkl3vnkcj63.apps.googleusercontent.com (1).json
+*.sqlite3
+__pycache__/
+*.pyc
+media/
+*.json
