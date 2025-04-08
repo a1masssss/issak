@@ -46,15 +46,25 @@
                 <div id="pdf-form" class="tab-pane fade show active">
                     <div class="card custom-card shadow mb-4">
                         <div class="card-header border-0 bg-gradient-primary">
-                            <h4 class="card-title mb-0">Summarize Uploaded File</h4>
+                                <h4 class="card-title mb-0">Summarize Uploaded File</h4>
                         </div>
                         <div class="card-body p-4">
                             <form action="{% url 'upload_file' %}" id="pdf-upload-dropzone" method="post" enctype="multipart/form-data" class="form-upload">
                                 {% csrf_token %}
                                 {{ pdf_form|crispy }}
-                                <button type="submit" class="btn btn-primary btn-lg w-100 mt-4 submit-btn">Summarize File</button>
+                                <button type="submit" class="btn btn-primary btn-lg w-100 mt-4 submit-btn" id="file-summarize-btn">Summarize File</button>
                             </form>
                         </div>
+                        
+                        {% if not user.is_authenticated %}
+                        <script>
+                            document.getElementById('file-summarize-btn').addEventListener('click', function(event) {
+                                event.preventDefault();  
+                                window.location.href = "{% url 'login' %}"; 
+                            });
+                        </script>
+                        {% endif %}
+                                              
                     </div>
                 </div>
 
@@ -67,9 +77,17 @@
                             <form action="{% url 'submit_youtube' %}" method="post" class="form-upload">
                                 {% csrf_token %}
                                 {{ youtube_form|crispy }}
-                                <button type="submit" class="btn btn-primary btn-lg w-100 mt-4 submit-btn">Summarize Video</button>
+                                <button type="submit" class="btn btn-primary btn-lg w-100 mt-4 submit-btn" id="yt-summarize-btn">Summarize Video</button>
                             </form>
                         </div>
+                        {% if not user.is_authenticated %}
+                        <script>
+                            document.getElementById('yt-summarize-btn').addEventListener('click', function(event) {
+                                event.preventDefault();  
+                                window.location.href = "{% url 'login' %}"; 
+                            });
+                        </script>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -82,9 +100,17 @@
                             <form action="{% url 'submit_text' %}" method="post" class="form-upload">
                                 {% csrf_token %}
                                 {{ text_form|crispy }}
-                                <button type="submit" class="btn btn-primary btn-lg w-100 mt-4 submit-btn">Summarize Text</button>
+                                <button type="submit" class="btn btn-primary btn-lg w-100 mt-4 submit-btn" id="text-summarize-btn">Summarize Text</button>
                             </form>
                         </div>
+                        {% if not user.is_authenticated %}
+                        <script>
+                            document.getElementById('text-summarize-btn').addEventListener('click', function(event) {
+                                event.preventDefault();  
+                                window.location.href = "{% url 'login' %}"; 
+                            });
+                        </script>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -97,9 +123,17 @@
                             <form action="{% url 'submit_article' %}" method="post" class="form-upload">
                                 {% csrf_token %}
                                 {{ article_form|crispy }}
-                                <button type="submit" class="btn btn-primary btn-lg w-100 mt-4 submit-btn">Summarize Article</button>
+                                <button type="submit" class="btn btn-primary btn-lg w-100 mt-4 submit-btn" id="article-summarize-btn">Summarize Article</button>
                             </form>
                         </div>
+                        {% if not user.is_authenticated %}
+                        <script>
+                            document.getElementById('article-summarize-btn').addEventListener('click', function(event) {
+                                event.preventDefault();  
+                                window.location.href = "{% url 'login' %}"; 
+                            });
+                        </script>
+                        {% endif %}
                     </div>
                 </div>
             </div>

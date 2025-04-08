@@ -1,13 +1,14 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
-from .views import  TextChatBotView, YoutubeChatBotView, PDFChatBotView, ArticleChatBotView,  TextView, UploadPDFView, SubmitYouTubeView, UploadPageView, GenerateFlashCardsView, ArticleView,  PDFMindMapView, summary_list, summary_detail, note_edit_view, note_delete_view
+from .views import  TextChatBotView, YoutubeChatBotView, PDFChatBotView, ArticleChatBotView,  TextView, UploadPDFView, SubmitYouTubeView, UploadPageView, GenerateFlashCardsView, ArticleView,  PDFMindMapView, summary_list, summary_detail, note_edit_view, note_delete_view, pricing_page
 from main import views
 
 urlpatterns = [
     # navabar
     path("", UploadPageView.as_view(), name="upload_page"), #upload_page
     path('summary_list', summary_list,  name = 'notes'),
+    path('pricing', pricing_page, name = 'pricing_page'),
     path('summary/<uuid:summary_id>/', summary_detail, name = 'summary_detail'), 
 
     

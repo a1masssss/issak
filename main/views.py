@@ -354,3 +354,8 @@ class PDFMindMapView(View):
             print(f"Error in PDFMindMapView: {str(e)}")
             return JsonResponse({'error': f"Failed to generate mind map: {str(e)}"}, status=500)
     
+
+
+
+def pricing_page(request):
+    return render(request, 'other/pricing.html')
