@@ -202,7 +202,6 @@ MEDIA_URL = "media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'main',"media")
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
