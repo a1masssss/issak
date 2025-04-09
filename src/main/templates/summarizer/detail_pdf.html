@@ -1,0 +1,401 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block extra_head %}
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/reactflow@11/umd/react-flow.development.js"></script>
+{% endblock %}
+
+
+
+
+{% block content %}
+    {{ flashcards|json_script:"flashcards-data" }}
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="text-center mb-5">
+                    <h1 class="display-5 fw-bold text-gradient mb-3">PDF Summary</h1>
+                    <p class="lead text-muted">Review, interact, and test your knowledge</p>
+                </div>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+                <title>{% block title %} PDF Summary {% endblock %}</title>
+
+                <!-- Custom Styled Tabs -->
+                <ul class="nav custom-tabs mb-4" id="contentTabs">
+                    <li class="nav-item">
+                        <a class="nav-link active d-flex align-items-center" id="note-tab" data-bs-toggle="tab" href="#note-form">
+                            <i class="fas fa-file-lines me-2"></i> AI Note
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center" id="chat-tab" data-bs-toggle="tab" href="#chat-form">
+                            <i class="fas fa-comments me-2"></i> AI Chat
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center" id="flashcard-tab" data-bs-toggle="tab" href="#flashcard-form">
+                            <i class="fa-solid fa-layer-group me-2"></i> AI Flashcards
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <!-- AI Note Section -->
+                    <div class="tab-pane fade show active" id="note-form">
+                        <div class="card custom-card shadow mb-4">
+                            <div class="card-header border-0 bg-gradient-primary">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h4 class="card-title mb-0">
+                                        <i class="fas fa-file-alt me-2"></i> Summary
+                                    </h4>
+                                    <button class="btn btn-light btn-sm rounded-pill copy-btn" onclick="copySummary()">
+                                        <i class="fa-solid fa-copy me-1"></i> Copy
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="summary-content" id="summary-text">
+                                    <p class="summary-text" >
+                                        {{ summary|safe }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Chat Section -->
+                    <div class="tab-pane fade" id="chat-form">
+                        <div class="card custom-card shadow mb-4">
+                            <div class="card-header border-0 bg-gradient-primary">
+                                <h4 class="card-title mb-0">
+                                    <i class="fas fa-comments me-2"></i> Chat with AI about this file
+                                </h4>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="chat-box" id="chat-box">
+                                    <div class="chat-message ai-message">
+                                        Hello! I'm here to help you understand this file. What questions do you have?
+                                    </div>
+                                </div>
+                                <div class="chat-input-container mt-3">
+                                    <div class="input-group">
+                                        <input type="text" id="user-input" class="form-control" placeholder="Ask something about the document...">
+                                        <button id="send-button" class="btn btn-primary">
+                                            <i class="fas fa-paper-plane me-1"></i> Send
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Flashcard Generator Section -->
+                    <div class="tab-pane fade" id="flashcard-form">
+                        <div class="card custom-card shadow mb-4">
+                            <div class="card-header border-0 bg-gradient-primary">
+                                <h4 class="card-title mb-0">
+                                    <i class="fa-solid fa-layer-group me-2"></i> Let's test your knowledge
+                                </h4>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="flashcard-container">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6 mb-3 mb-md-0">
+                                            <label for="flashcard-count" class="form-label fw-bold">Select Number of Flashcards:</label>
+                                            <select id="flashcard-count" class="form-select">
+                                                <option value="5">5 Flashcards</option>
+                                                <option value="10">10 Flashcards</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 d-flex align-items-end">
+                                            <button id="generate-flashcards" class="btn btn-primary w-100" onclick="fetchFlashcardsFromServer()">
+                                                <span id="button-text"><i class="fas fa-sync-alt me-2"></i> Generate Flashcards</span>
+                                                <span id="button-loading" class="d-none">
+                                                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                    Loading...
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Flashcard Display Section -->
+                                    <div id="flashcard-display" class="mt-4">
+                                        <div id="flashcard" class="card shadow-sm flashcard-card" onclick="flipCard()">
+                                            <div class="card-body text-center p-5">
+                                                <h5 class="card-title" id="flashcard-front">Question here...</h5>
+                                                <p class="card-text d-none" id="flashcard-back">Answer here...</p>
+                                                <p class="text-muted mt-3 small">Click card to reveal answer</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-center gap-3 mt-4">
+                                            <button class="btn btn-success" onclick="markAsKnown()">
+                                                <i class="fas fa-check me-2"></i> I Know
+                                            </button>
+                                            <button class="btn btn-danger" onclick="markAsUnknown()">
+                                                <i class="fas fa-times me-2"></i> I Don't Know
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Result Section -->
+                                    <div id="results-section" class="mt-4 d-none">
+                                        <div class="card bg-light">
+                                            <div class="card-body text-center">
+                                                <h4 class="mb-3">Results:</h4>
+                                                <p id="results-text" class="lead"></p>
+                                                <div class="d-flex justify-content-center gap-3 mt-3">
+                                                    <button class="btn btn-secondary" onclick="restartFlashcards()">
+                                                        <i class="fas fa-redo me-2"></i> Restart
+                                                    </button>
+                                                    <button class="btn btn-warning" onclick="continueLearning()">
+                                                        <i class="fas fa-graduation-cap me-2"></i> Continue Learning
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--  mind map section -->
+                    <div class="tab-pane fade" id="mindmap-form">
+                        <div class="card custom-card shadow mb-4">
+                            <div class="card-header border-0 bg-gradient-primary">
+                                <h4 class="card-title mb-0">
+                                    <i class="fas fa-project-diagram me-2"></i> AI Mind Map
+                                </h4>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="mindmap-container">
+                                    <div class="row mb-3">
+                                        <div class="col-md-12 d-flex justify-content-center">
+                                            <button id="generate-mindmap" class="btn btn-primary">
+                                                <i class="fas fa-brain me-2"></i> Generate Mind Map
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="mindmap-display" class="mt-4">
+                                        <div id="reactflow-container" style="width: 100%; height: 500px; border: 1px solid #e0e0e0; border-radius: 10px;">
+                                            <!-- React Flow will render here -->
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="mindmap-loading" class="text-center py-5 d-none">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-3">Generating mind map...</p>
+                                    </div>
+                                    
+                                    <div id="mindmap-error" class="alert alert-danger mt-4 d-none">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <span id="error-message">Failed to generate mind map.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% block footer %}
+    {% endblock %}
+    <style>
+        body {
+    background-color: #f8f9fa;
+}
+
+.text-gradient {
+    background: linear-gradient(45deg, #4e73df, #36b9cc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #4e73df, #36b9cc);
+    color: white;
+    padding: 1.25rem 1.5rem;
+    border-radius: 10px 10px 0 0;
+}
+
+.custom-card {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.custom-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+
+.custom-tabs {
+    border-bottom: none;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.custom-tabs .nav-item {
+    margin-bottom: 0;
+}
+
+.custom-tabs .nav-link {
+    background-color: white;
+    color: #495057;
+    border-radius: 30px;
+    padding: 12px 24px;
+    transition: all 0.2s ease;
+    border: 1px solid #e9ecef;
+    font-weight: 500;
+}
+
+.custom-tabs .nav-link.active {
+    background: linear-gradient(45deg, #4e73df, #36b9cc);
+    color: white;
+    border: 1px solid transparent;
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.2);
+}
+
+.custom-tabs .nav-link:hover:not(.active) {
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+}
+
+/* Chat styling */
+.chat-box {
+    max-height: 400px;
+    overflow-y: auto;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    padding: 15px;
+}
+
+.chat-message {
+    margin-bottom: 15px;
+    padding: 12px 15px;
+    border-radius: 18px;
+    max-width: 80%;
+    position: relative;
+}
+
+.user-message {
+    background-color: #4e73df;
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 5px;
+}
+
+.ai-message {
+    background-color: #e9ecef;
+    color: #343a40;
+    margin-right: auto;
+    border-bottom-left-radius: 5px;
+}
+
+.typing-indicator {
+    display: flex;
+    align-items: center;
+}
+
+.typing-indicator span {
+    height: 8px;
+    width: 8px;
+    float: left;
+    margin: 0 2px;
+    background-color: #9E9EA1;
+    display: block;
+    border-radius: 50%;
+    opacity: 0.4;
+    animation: typing 1s infinite;
+}
+
+.typing-indicator span:nth-of-type(1) { animation-delay: 0s; }
+.typing-indicator span:nth-of-type(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-of-type(3) { animation-delay: 0.4s; }
+
+@keyframes typing {
+    0% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+    100% { opacity: 0.4; transform: scale(1); }
+}
+
+/* Flashcard styling */
+.flashcard-card {
+    cursor: pointer;
+    min-height: 200px;
+    border-radius: 15px;
+    background: white;
+    transition: all 0.3s ease;
+    border: 1px solid #e0e0e0;
+}
+
+.flashcard-card:hover {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transform: translateY(-5px);
+}
+
+.copy-btn:hover {
+    background-color: #e9ecef;
+}
+
+/* Button styling */
+.btn-primary {
+    background: linear-gradient(45deg, #4e73df, #36b9cc);
+    border: none;
+    border-radius: 30px;
+    padding: 10px 20px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    box-shadow: 0 5px 15px rgba(78, 115, 223, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-success, .btn-danger, .btn-secondary, .btn-warning {
+    border-radius: 30px;
+    padding: 10px 20px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover, .btn-danger:hover, .btn-secondary:hover, .btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Form control styling */
+.form-control, .form-select {
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+}
+
+    </style>
+    
+
+    <script>
+        const pdfChatUrl = "{% url 'pdf_chat' %}";
+    </script>
+
+    <script src="{% static 'js/detail_pdf.js' %}"></script>   
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

@@ -1,0 +1,57 @@
+Generate a highly detailed, comprehensive, and structured summary of the following text:
+
+{text}
+
+Your goal is to create a polished, professional, and visually engaging summary that effectively conveys the content’s essence while capturing all key points. Ensure your summary follows these enhanced guidelines:
+
+<b>1. Clear Structure and Logical Flow</b><br>
+&bull; Divide the content into distinct, well-defined sections with appropriate <b>headings and subheadings</b> that accurately reflect the main themes and ideas.<br>
+&bull; Ensure the structure follows a logical sequence, maintaining coherence between sections.<br>
+&bull; Use nested bullet points, numbering, and indentation where necessary to show relationships between ideas.<br>
+
+<b>2. Highlight Key Concepts and Critical Insights</b><br>
+&bull; Bold the most important terms, concepts, and statistics using <b>&lt;b&gt;</b> tags to draw attention.<br>
+&bull; Use bullet points (&bull;) to list supporting arguments, examples, or evidence.<br>
+&bull; Include numeric prefixes (1., 2., etc.) for step-by-step processes, ordered lists, and sequential information.<br>
+
+<b>3. Emphasize Important Statistics, Metrics, and Data</b><br>
+&bull; Accurately capture any numerical data, percentages, or quantitative insights.<br>
+&bull; Present this information in an easy-to-read format, ensuring that complex figures are contextualized properly.<br>
+
+<b>4. Enhance Readability with Visual and Contextual Cues</b><br>
+&bull; Use relevant emojis strategically to enhance readability, provide visual cues, and make the content engaging without being excessive.<br>
+&bull; Place emojis after headings or key points to add emphasis and context.<br>
+
+<b>5. Maintain Original Tone, Style, and Intent</b><br>
+&bull; Reflect the tone and perspective of the original text (formal, informal, persuasive, etc.).<br>
+&bull; Preserve the nuances and subtleties of the author’s voice while ensuring that all critical information is retained.<br>
+
+<b>6. Use HTML-Style Formatting (Strictly Avoid Markdown)</b><br>
+&bull; Use <b>&lt;b&gt;</b> tags for bold headings and important phrases.<br>
+&bull; Use <b>&lt;br&gt;</b> for line breaks to separate content.<br>
+&bull; Use <b>&bull;</b> for bullet points.<br>
+&bull; Use numeric prefixes for ordered lists (e.g., 1., 2., 3.).<br>
+
+<b>7. Key Takeaways and Actionable Insights</b><br>
+&bull; Provide a dedicated <b>“Key Takeaways”</b> section at the end.<br>
+&bull; Summarize the most crucial points, insights, and conclusions concisely in this section.<br>
+&bull; Highlight actionable recommendations or next steps if applicable.<br>
+
+<b>8. Ensure Self-Sufficiency and Context</b><br>
+&bull; Craft the summary so that it is fully self-contained and understandable without requiring reference to the original text.<br>
+&bull; Add brief contextual information where necessary to clarify complex ideas.<br>
+
+<b>9. Address Possible Gaps and Add Context</b><br>
+&bull; Identify any gaps or ambiguities in the original text and fill them with inferred or logical context when appropriate.<br>
+&bull; Enhance the completeness of the summary by including relevant background information, if needed.<br>
+
+<b>10. Additional Guidelines for Excellence</b><br>
+&bull; Use concise language while maintaining depth and detail.<br>
+&bull; Avoid unnecessary filler or redundant content.<br>
+&bull; Format the summary to be visually appealing and easy to navigate.<br>
+&bull; Ensure that each section transitions smoothly to the next, maintaining a natural and coherent flow.<br>
+
+🚀 <b>Final Note:</b><br>
+&bull; Focus on delivering a summary that exceeds expectations by demonstrating a deep understanding of the text.<br>
+&bull; Pay attention to both detail and clarity, ensuring that all aspects of the text are fully covered.<br>
+&bull; Maintain a high level of professionalism and polish in your output.<br>
