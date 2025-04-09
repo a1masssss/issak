@@ -2,7 +2,7 @@ import openai
 import time
 from openai.error import RateLimitError, APIError, Timeout, ServiceUnavailableError
 from issak.utils.summarizers.prompt_loader import get_openai_prompt
-def summarize_with_openai(text):
+def summarize_with_openai(text: str) -> str:
     prompt = get_openai_prompt(text)
     for attempt in range(3):
         try:

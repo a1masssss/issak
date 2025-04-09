@@ -1,7 +1,7 @@
 import openai
 
 
-def generate_flashcards_from_summary(summary):
+def generate_flashcards_from_summary(summary: str) -> list:
     try:
         prompt = f"""
         You are tasked with creating exactly 10 educational flashcards from the following text:

@@ -1,7 +1,7 @@
 import openai
 
 
-def generate_stream_response(prompt):
+def generate_stream_response(prompt: str):
     try:
         response_iter = openai.ChatCompletion.create(
             model="gpt-4o-mini",

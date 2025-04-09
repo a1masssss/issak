@@ -2,7 +2,7 @@ import yt_dlp
 from youtube_transcript_api import YouTubeTranscriptApi
 
 
-def get_youtube_transcript(video_url):
+def get_youtube_transcript(video_url:str) -> dict:
     try:
         ydl_opts = {'quiet': True}
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:

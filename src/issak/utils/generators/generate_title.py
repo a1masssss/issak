@@ -1,7 +1,7 @@
 import openai
 
 
-def generate_title_from_text(text):
+def generate_title_from_text(text:str) -> str:
     prompt = f"""
     Generate a concise, capitalized title (3-5 words) for the following text:
     "{text}"

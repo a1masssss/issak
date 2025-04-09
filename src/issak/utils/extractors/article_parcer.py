@@ -2,7 +2,7 @@ import requests
 
 from newspaper import Article
 
-def parse_article(url):
+def parse_article(url: str) -> dict:
     try:
         headers = {
             "User-Agent": (
