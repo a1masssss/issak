@@ -162,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('button-loading').classList.remove('d-none');
         document.getElementById('generate-flashcards').disabled = true;
         
-        fetch("/main/generate_flashcards/plain_text/")
+        fetch("/main/generate_flashcards/pdf_text/")
             .then(response => response.json())
             .then(data => {
                 if (data.flashcards) {

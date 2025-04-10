@@ -12,7 +12,7 @@
                     <p class="lead text-muted">Review, interact, and test your knowledge</p>
                 </div>
 
-                <link rel="stylesheet" href="{% static 'main/styles.css' %}">
+
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
                 <title>{% block title %} Article Summary {% endblock %}</title>
 
@@ -105,7 +105,11 @@
                                         </div>
                                         <div class="col-md-6 d-flex align-items-end">
                                             <button id="generate-flashcards" class="btn btn-primary w-100" onclick="fetchFlashcardsFromServer()">
-                                                <i class="fas fa-sync-alt me-2"></i> Generate Flashcards
+                                                <span id="button-text"><i class="fas fa-sync-alt me-2"></i> Generate Flashcards</span>
+                                                <span id="button-loading" class="d-none">
+                                                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                    Loading...
+                                                </span>
                                             </button>
                                         </div>
                                     </div>
@@ -346,5 +350,6 @@
     </script>
 
     <script src="{% static 'js/detail_article.js' %}"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}

@@ -21,6 +21,12 @@ from django.http import JsonResponse
 def home(request):
     return render(request, "users/base.html")
 
+def privacy_policy(request):
+    return render(request, "legal/privacy_policy.html")
+
+def terms_of_service(request):  
+    return render(request, "legal/terms_of_service.html")
+
 class SingUpView(CreateView):
     form_class = UserRegisterForm
     success_url = reverse_lazy("login")

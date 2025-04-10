@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     {% load static %}
-    <link rel="stylesheet" href="{% static 'main/styles.css' %}">
      <!-- React & ReactDOM -->
      <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
      <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -16,6 +15,8 @@
      <script src="https://unpkg.com/reactflow@11.7.0/dist/umd/reactflow.production.min.js"></script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"/>
+
     
     {% block head %}
     {% endblock %}
@@ -266,16 +267,22 @@
             <div class="row justify-content-center mb-3">
                 <div class="col-md-4">
                     <h5 class="footer-heading">Get in Touch</h5>
-                    <p>We'd love to hear from you! Send us an email at <a href="mailto:almas.issakov.t@gmail.com">almas.issakov.t@gmail.com</a></p>
+                    <p>We'd love to hear from you! Send us an email at <a href="mailto:almas.issakov.t@gmail.com">support@issak.ai</a></p>
                 </div>
                 <div class="col-md-4">
                     <h5 class="footer-heading">Follow Us</h5>
                     <div class="social-links">
-                        <a href="#"><i class="bi bi-facebook"></i></a>
-                        <a href="#"><i class="bi bi-twitter"></i></a>
-                        <a href="#"><i class="bi bi-instagram"></i></a>
+                        <!-- Existing Social Links -->
+                        <a href="https://www.facebook.com/randomProfile"><i class="bi bi-facebook"></i></a>
+                        <a href="https://twitter.com/randomProfile"><i class="bi bi-twitter"></i></a>
+                        <a href="https://www.instagram.com/randomProfile"><i class="bi bi-instagram"></i></a>
+                        
+                        <!-- New Social Links -->
+                        <a href="https://www.linkedin.com/in/randomProfile"><i class="bi bi-linkedin"></i></a>
+                        <a href="https://www.tiktok.com/@randomProfile"><i class="bi bi-tiktok"></i></a>
                     </div>
                 </div>
+                
                 <div class="col-md-4">
                     <h5 class="footer-heading">Subscribe</h5>
                     <p>Stay updated with our latest news!</p>
@@ -290,7 +297,7 @@
             <hr>
             <p class="mb-0">
                 </span> &copy; 2025 Issak Website. All rights reserved.<br>
-                <a href="/privacy">Privacy Policy</a> | <a href="/terms">Terms of Service</a>
+                <a href="{% url 'privacy_policy' %}">Privacy Policy</a> | <a href="{% url 'terms_of_service' %}">Terms of Service</a>
             </p>
         </div>
     </footer>

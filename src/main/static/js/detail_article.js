@@ -131,6 +131,10 @@ document.addEventListener("DOMContentLoaded", function () {
     let unknownFlashcards = [];
 
     function fetchFlashcardsFromServer() {
+        document.getElementById('button-text').classList.add('d-none');
+        document.getElementById('button-loading').classList.remove('d-none');
+        document.getElementById('generate-flashcards').disabled = true;
+        
         fetch("/main/generate_flashcards/article_text/")
             .then(response => response.json())
             .then(data => {
@@ -146,6 +150,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     <div class="alert alert-warning">
                         Unable to load flashcards. Please try again.
                     </div>`;
+            })
+            .finally(() => {
+                // Hide loading state regardless of success or failure
+                document.getElementById('button-text').classList.remove('d-none');
+                document.getElementById('button-loading').classList.add('d-none');
+                document.getElementById('generate-flashcards').disabled = false;
             });
     }
 

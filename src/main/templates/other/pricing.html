@@ -1,6 +1,159 @@
 {% extends 'users/base.html' %}
 
 {% block content %}
-<h1>Choose Your plan</h1>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    
+    .pricing-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        max-width: 1200px;
+        margin: 30px auto;
+    }
+    
+    .pricing-card {
+        background-color: white;
+        border-radius: 16px;
+        padding: 30px;
+        width: 100%;
+        max-width: 400px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+    
+    .pricing-card:hover {
+        transform: translateY(-10px);
+    }
+    
+    .pricing-card h2 {
+        font-size: 24px;
+        margin-bottom: 15px;
+        color: #333;
+    }
+    
+    .pricing-card .price {
+        font-size: 42px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #333;
+    }
+    
+    .pricing-card .description {
+    position: relative;
+    color: #666;
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 4px;
+    padding-left: 16px; 
+}
+
+    .pricing-card .description::before {
+        content: "✓";
+        position: absolute;
+        left: 0; 
+        top: 50%;                  
+        transform: translateY(-50%); 
+        color: #2ecc71;
+        font-weight: bold;
+        font-size: 18px;            
+    }
+
+    
+    .pricing-card button {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 30px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        width: 100%;
+    }
+    
+    .pricing-card button:hover {
+        background-color: #2980b9;
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Pro card (Most Popular) */
+    .pro-card {
+        background-color: #f9fbff;
+        border: 2px solid #3498db;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .pro-card button {
+        background-color: #e74c3c;
+    }
+    
+    .pro-card button:hover {
+        background-color: #c0392b;
+    }
+    
+    .popular-badge {
+        position: absolute;
+        top: 15px;
+        right: -35px;
+        background-color: #e74c3c;
+        color: white;
+        padding: 8px 30px;
+        transform: rotate(45deg);
+        font-size: 14px;
+        font-weight: bold;
+    }
+    
+    /* Premium card */
+    .premium-card button {
+        background-color: #9b59b6;
+    }
+    
+    .premium-card button:hover {
+        background-color: #8e44ad;
+    }
+</style>
+<div class="pricing-container">
+    <!-- Free card -->
+    <div class="pricing-card">
+        <h2>Free</h2>
+        <div class="price">$0</div>
+        <div class="description">Limited features</div>
+        <div class="description">3 summaries per day</div>
+        <button>Start for free</button>
+    </div>
+    
+    <!-- Pro card (Most Popular) -->
+    <div class="pricing-card pro-card">
+        <div class="popular-badge">Most Popular</div>
+        <h2>Pro</h2>
+        <div class="price">$6.90</div>
+        <div class="description">All features</div>
+        <div class="description">25 summaries per day</div>
+
+        <button>Buy Pro</button>
+    </div>
+    
+    <!-- Premium card -->
+    <div class="pricing-card premium-card">
+        <h2>Premium</h2>
+        <div class="price">$9.90</div>
+        <div class="description">All features without limits</div>
+        <div class="description">Unlimited summaries</div>
+        <button>Buy Premium</button>
+    </div>
+</div>
 
 {% endblock %}

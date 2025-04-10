@@ -24,7 +24,7 @@ def summary_list(request):
     elif sort_by in SORT_OPTIONS:
         summaries = summaries.filter(content_type=SORT_OPTIONS[sort_by])
     
-    return render(request, 'summarizer/notes.html', {
+    return render(request, 'notes/notes.html', {
         'summaries': summaries,
         'current_sort': sort_by,
         'sort_options': SORT_OPTIONS.keys()

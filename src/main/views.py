@@ -211,6 +211,8 @@ class PDFChatBotView(View):
             The user asks:
             {user_message}
 
+            answer simply and shortly in 2-3 sentences.
+
             Please answer based ONLY on the PDF content above.
             """
 
@@ -248,6 +250,8 @@ class YoutubeChatBotView(View):
         The user asks:
         {user_message}
 
+        answer simply and shortly in 2-3 sentences.
+
         Please answer based ONLY on the content above.
         """
 
@@ -273,6 +277,8 @@ class TextChatBotView(View):
         The user asks:
         {user_message}
 
+        answer simply and shortly in 2-3 sentences.
+
         Please answer based ONLY on the text above.
         """
 
@@ -297,6 +303,9 @@ class ArticleChatBotView(View):
 
         The user asks:
         {user_message}
+
+        answer simply and shortly in 2-3 sentences.
+        
         Please answer based ONLY on the text above.
         """
         return StreamingHttpResponse(generate_stream_response(prompt), content_type= "text/event-stream")
