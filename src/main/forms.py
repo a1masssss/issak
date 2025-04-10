@@ -24,6 +24,7 @@ class YouTubeForm(BaseForm):
     )
 class TextForm(BaseForm):
     text = forms.CharField(
+        max_length=10000,
         widget=forms.Textarea(attrs={"placeholder": "Enter text here"}), 
     )
     

@@ -56,7 +56,7 @@ class UploadPDFView(View):
         if summary:
             self.save_to_db(pdf_title, summary, file_name)
 
-        messages.success(request, "Note saved to AI Notes")
+        messages.success(request, "Note successfully saved to AI Notes")
 
         return render(self.request, 'summarizer/detail_pdf.html', {'pdf_name': file_name, 'summary': summary})
     
@@ -305,7 +305,7 @@ class ArticleChatBotView(View):
         {user_message}
 
         answer simply and shortly in 2-3 sentences.
-        
+
         Please answer based ONLY on the text above.
         """
         return StreamingHttpResponse(generate_stream_response(prompt), content_type= "text/event-stream")

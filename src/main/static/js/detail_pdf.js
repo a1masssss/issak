@@ -278,3 +278,4 @@ document.addEventListener("DOMContentLoaded", function () {
     window.restartFlashcards = restartFlashcards;
     window.continueLearning = continueLearning;
 });
+  

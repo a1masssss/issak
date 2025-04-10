@@ -14,7 +14,7 @@ def note_edit_view(request, pk):
     else:
         form = SummaryForm(instance=obj)
 
-    return render(request, 'summarizer/edit.html', {'form': form})
+    return render(request, 'notes/edit.html', {'form': form})
 
 def note_delete_view(request, pk):
     note = get_object_or_404(SummaryNotes, pk=pk)

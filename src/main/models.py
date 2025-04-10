@@ -21,7 +21,7 @@ class Video(models.Model):
 
 
 class Text(models.Model):
-    text = models.TextField()
+    text = models.TextField(max_length=10000)
     uploaded_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name = 'text')
 
