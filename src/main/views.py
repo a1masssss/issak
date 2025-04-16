@@ -25,6 +25,7 @@ from issak.utils.summarizers.openai_summarize import summarize_with_openai
 from issak.utils.generators.generate_title import generate_title_from_text
 from issak.utils.generators.generate_stream import generate_stream_response
 from issak.utils.generators.generate_flashcards import generate_flashcards_from_summary
+from issak.utils.generators.generate_quiz import generate_quiz_from_summary
 
 # class based views
 class UploadPageView(View):
@@ -82,6 +83,7 @@ class SubmitYouTubeView(FormView):
         full_text = get_youtube_transcript(youtube_url) 
         summary = summarize_with_openai(full_text)
         yt_content = full_text.get('transcript', '')
+        print(yt_content)
         yt_title = full_text.get('youtube_title', '')
         yt_image = full_text.get('image_url', '')
         print(len(yt_content))
@@ -158,6 +160,7 @@ class ArticleView(FormView):
         article_img = text.get('top_image', '')
         print(len(article_text))
         summary = summarize_with_openai(article_text)
+        print(article_text)
 
 
         self.request.session['article_text'] = text
@@ -332,6 +335,33 @@ class GenerateFlashCardsView(View):
             return JsonResponse({'error': str(e)}, status=500)
 
 
+
+
+class GenerateQuizView(View):
+    def get(self, request, source=None, *args, **kwargs):
+        valid_sources = ['plain_text', 'youtube_text', 'article_text', 'pdf_text']
+        if source not in valid_sources:
+            return JsonResponse({'error': f'Invalid source "{source}"'}, status=400)
+
+        summary = request.session.get(source)
+        print(f"Summary for {source}:", summary[:100] if summary else "None")
+        
+        if not summary:
+            # For testing/debugging, create a dummy summary if none exists
+            print(f"No {source} summary found in session, using test summary")
+            summary = "This is a test summary for generating quiz questions. Django is a web framework for Python. PDF stands for Portable Document Format. Unit testing helps identify bugs early."
+        
+        try:
+            quiz_data = generate_quiz_from_summary(summary)
+            print(f"Generated quiz data with {len(quiz_data.get('questions', []))} questions")
+            
+            # The function now directly returns a dictionary
+            return JsonResponse({'quiz': quiz_data})
+        except Exception as e:
+            print(f"Error in GenerateQuizView: {e}")
+            # Return test data as fallback
+            from issak.utils.generators.generate_quiz import get_test_quiz_data
+            return JsonResponse({'quiz': get_test_quiz_data(), 'error': str(e)})
 
 def pricing_page(request):
     return render(request, 'other/pricing.html')

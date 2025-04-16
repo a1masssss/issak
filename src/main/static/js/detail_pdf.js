@@ -39,7 +39,14 @@ function getCookie(name) {
     }
     return cookieValue;
 }
-const csrftoken = getCookie('csrftoken');
+
+// Check if csrftoken is already defined in the global scope
+if (typeof window.csrftoken === 'undefined') {
+    window.csrftoken = getCookie('csrftoken'); // Make it available globally
+} else {
+    // Use the existing csrftoken
+    console.log("CSRF token already defined");
+}
 
 // Elements
 const userInputElem = document.getElementById("user-input");
@@ -82,7 +89,7 @@ async function sendMessage() {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRFToken": csrftoken
+                "X-CSRFToken": window.csrftoken || getCookie('csrftoken') // Use global token or get a new one
             },
             body: JSON.stringify({ message: userInput })
         });
@@ -271,11 +278,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Expose globally
-    window.fetchFlashcardsFromServer = fetchFlashcardsFromServer;
     window.flipCard = flipCard;
     window.markAsKnown = markAsKnown;
     window.markAsUnknown = markAsUnknown;
+    window.fetchFlashcardsFromServer = fetchFlashcardsFromServer;
     window.restartFlashcards = restartFlashcards;
     window.continueLearning = continueLearning;
+    
+    console.log("Flashcard functions initialized and exposed globally");
 });
   

@@ -37,7 +37,7 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1").split(',')  
 
 # Application definition
-SITE_ID = 2
+SITE_ID = 3
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -56,7 +56,6 @@ INSTALLED_APPS = [
     'allauth.account', 
     'allauth.socialaccount', 
     'allauth.socialaccount.providers.google'
-
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -157,7 +156,9 @@ EMAIL_USE_TLS = True #shifrovamie
 EMAIL_HOST_USER = os.getenv('EMAIL_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
-AUTH_USER_MODEL = "users.User"
+
+# Set the custom user model
+AUTH_USER_MODEL = 'users.User'
 
 
 
@@ -177,8 +178,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend', 
-    'allauth.account.auth_backends.AuthenticationBackend'
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 STATIC_URL = '/static/'
@@ -188,8 +189,6 @@ STATICFILES_DIRS = [
 ]
 # Куда складывать все файлы при сборке (в проде)
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
-AUTH_USER_MODEL = 'users.User'
 
 
 
@@ -208,14 +207,12 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_LOGIN_ON_GET = True
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None  # Disable username requirement
-# ACCOUNT_USERNAME_REQUIRED = False  # Don't ask for username during signup
-# ACCOUNT_EMAIL_REQUIRED = True  # Ensure email is always required
-ACCOUNT_LOGIN_METHODS = {"email"}  
-ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]  
-ACCOUNT_EMAIL_VERIFICATION = "optional"  # Change to "optional" if needed
-ACCOUNT_ADAPTER = "users.adapters.CustomAccountAdapter"
-SOCIALACCOUNT_ADAPTER = "users.adapters.CustomSocialAccountAdapter"
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
+ACCOUNT_ADAPTER = 'users.adapters.CustomAccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'users.adapters.CustomSocialAccountAdapter'
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024  # 50MB limit
 

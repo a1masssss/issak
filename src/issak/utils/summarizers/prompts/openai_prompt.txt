@@ -55,3 +55,4 @@ Your goal is to create a polished, professional, and visually engaging summary t
 &bull; Focus on delivering a summary that exceeds expectations by demonstrating a deep understanding of the text.<br>
 &bull; Pay attention to both detail and clarity, ensuring that all aspects of the text are fully covered.<br>
 &bull; Maintain a high level of professionalism and polish in your output.<br>
+summarize in the language you are given!

@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
-from .views import  TextChatBotView, YoutubeChatBotView, PDFChatBotView, ArticleChatBotView,  TextView, UploadPDFView, SubmitYouTubeView, UploadPageView, GenerateFlashCardsView, ArticleView, pricing_page
+from .views import  GenerateQuizView, TextChatBotView, YoutubeChatBotView, PDFChatBotView, ArticleChatBotView,  TextView, UploadPDFView, SubmitYouTubeView, UploadPageView, GenerateFlashCardsView, ArticleView, pricing_page
 from main import views
 from issak.utils.views.note_views import note_edit_view, note_delete_view
 from issak.utils.views.summary_views import summary_list, summary_detail
@@ -29,6 +29,9 @@ urlpatterns = [
 
     # flashcards
     path("generate_flashcards/<str:source>/", GenerateFlashCardsView.as_view(), name="generate_flashcards"),
+
+    # quiz
+    path("generate_quiz/<str:source>/", GenerateQuizView.as_view(), name = 'generate_quiz'),
 
 
     # edit
