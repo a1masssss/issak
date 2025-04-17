@@ -7,3 +7,4 @@ media/
 *.json
 venv/
 media/
+cookies.txt
