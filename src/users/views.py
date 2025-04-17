@@ -57,15 +57,16 @@ class CustomLoginView(FormView):
 
 
 def activate_user(request, token: str, id: int):
-    activation = EmailActivation.objects.get(token=token)
-    user = User.objects.get(id=id)
+    activation = get_object_or_404(EmailActivation, token=token)
+    user = get_object_or_404(User, id=id)
+
     activation.is_active = True
     activation.save()
 
     user.is_active = True 
     user.save()
-    return redirect('login')
 
+    return redirect('login')
 
 
 
