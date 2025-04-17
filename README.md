@@ -14,7 +14,7 @@ A Django web application that lets users upload various content types (PDFs, You
 - **AI-Powered Processing**
   - Generate summaries using OpenAI/Anthropic
   - Create flashcards from content
-  - Generate interactive mind maps
+  - Generate interactive quiz
   - Context-aware chatbots for each content type
 - **User System**
   - Email-based registration with activation
