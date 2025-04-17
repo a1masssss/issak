@@ -34,9 +34,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 SECRET_KEY = os.getenv('SECRET_KEY')
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+# DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = True
 
-print("DEBUG =", DEBUG)
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1").split(',')  
 
@@ -122,8 +122,7 @@ DATABASES = {
     }
 }
 
-print("DEBUG_DB:", os.getenv("DB_HOST"), os.getenv("DB_NAME"), os.getenv("DB_USER"))
-print("USING SETTINGS FILE:", __file__)
+
 
 CACHES = {
     "default": {
