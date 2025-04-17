@@ -79,7 +79,7 @@ class EmailActivation(models.Model):
         company_name = "Issak"
         
     
-        base_url = "http://localhost:8000/"  # Change to your production URL
+        base_url = "https://issakov.com"  # Change to your production URL
         activation_url = f"{base_url}/users/activate/{self.token}/{self.user.id}/"
         
         # Email subject 
