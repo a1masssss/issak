@@ -122,6 +122,8 @@ DATABASES = {
     }
 }
 
+print("DEBUG_DB:", os.getenv("DB_HOST"), os.getenv("DB_NAME"), os.getenv("DB_USER"))
+print("USING SETTINGS FILE:", __file__)
 
 CACHES = {
     "default": {
