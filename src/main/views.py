@@ -213,7 +213,9 @@ class PDFChatBotView(View):
             The user asks:
             {user_message}
 
-            answer simply and shortly in 2-3 sentences.
+            answer simply and shortly in 3-5 sentences.
+
+            if users says to write something delailed, write it in 7-10 sentenses!
 
             Please answer based ONLY on the PDF content above.
             """
@@ -252,7 +254,9 @@ class YoutubeChatBotView(View):
         The user asks:
         {user_message}
 
-        answer simply and shortly in 2-3 sentences.
+        answer simply and shortly in 3-5 sentences.
+
+        if users says to write something delailed, write it in 7-10 sentenses!
 
         Please answer based ONLY on the content above.
         """
@@ -279,7 +283,9 @@ class TextChatBotView(View):
         The user asks:
         {user_message}
 
-        answer simply and shortly in 2-3 sentences.
+        answer simply and shortly in 3-5 sentences.
+
+        if users says to write something delailed, write it in 7-10 sentenses!
 
         Please answer based ONLY on the text above.
         """
@@ -306,7 +312,9 @@ class ArticleChatBotView(View):
         The user asks:
         {user_message}
 
-        answer simply and shortly in 2-3 sentences.
+        answer simply and shortly in 3-5 sentences.
+
+        if users says to write something delailed, write it in 7-10 sentenses!
 
         Please answer based ONLY on the text above.
         """
