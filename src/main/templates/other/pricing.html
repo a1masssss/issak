@@ -9,6 +9,24 @@
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     
+    .pricing-header {
+        text-align: center;
+        max-width: 700px;
+        margin: 50px auto 30px;
+        padding: 0 20px;
+    }
+    
+    .pricing-header h1 {
+        font-size: 36px;
+        color: #333;
+        margin-bottom: 15px;
+    }
+    
+    .pricing-header p {
+        font-size: 18px;
+        color: #666;
+        line-height: 1.6;
+    }
     
     .pricing-container {
         display: flex;
@@ -68,6 +86,13 @@
         font-size: 18px;            
     }
 
+    .price-period {
+        font-size: 16px;
+        color: #888;
+        display: block;
+        margin-top: -10px;
+        margin-bottom: 20px;
+    }
     
     .pricing-card button {
         background-color: #3498db;
@@ -80,6 +105,7 @@
         transition: all 0.3s ease;
         font-weight: 600;
         width: 100%;
+        margin-top: 20px;
     }
     
     .pricing-card button:hover {
@@ -124,15 +150,32 @@
     .premium-card button:hover {
         background-color: #8e44ad;
     }
+    .text-gradient {
+    background: linear-gradient(45deg, #4e73df, #36b9cc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 800 !important;
+    }
+
+    
 </style>
+
+<div class="pricing-header">
+    <h1 class="text-gradient">Choose the Perfect Plan for You</h1>
+    <p>Get access to Issak's summarization tools with a plan that matches your needs</p>
+</div>
+
 <div class="pricing-container">
     <title>{% block title %}Pricing · Issak{% endblock %}</title>
     <!-- Free card -->
     <div class="pricing-card">
         <h2>Free</h2>
         <div class="price">$0</div>
+        <span class="price-period">forever</span>
         <div class="description">Limited features</div>
         <div class="description">3 summaries per day</div>
+        <div class="description">Basic support</div>
         <button>Start for free</button>
     </div>
     
@@ -141,9 +184,11 @@
         <div class="popular-badge">Most Popular</div>
         <h2>Pro</h2>
         <div class="price">$6.90</div>
+        <span class="price-period">per month</span>
         <div class="description">All features</div>
         <div class="description">25 summaries per day</div>
-
+        <div class="description">Priority support</div>
+        <div class="description">Advanced analytics</div>
         <button>Buy Pro</button>
     </div>
     
@@ -151,11 +196,12 @@
     <div class="pricing-card premium-card">
         <h2>Premium</h2>
         <div class="price">$9.90</div>
+        <span class="price-period">per month</span>
         <div class="description">All features without limits</div>
         <div class="description">Unlimited summaries</div>
+        <div class="description">24/7 premium support</div>
+        <div class="description">Team collaboration tools</div>
         <button>Buy Premium</button>
     </div>
 </div>
-
 {% endblock %}
-

@@ -1,8 +1,97 @@
 {% extends 'users/base.html' %}
 
 {% block content %}
+<style>
+  .edit-form-container {
+    max-width: 600px;
+    margin: 50px auto;
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .edit-form-container h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 26px;
+    color: #333;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border 0.3s ease;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus {
+    border-color: #3498db;
+    outline: none;
+  }
+
+  .button-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 30px;
+  }
+
+  .button-group button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .button-group button[type="submit"] {
+    background-color: #3498db;
+    color: white;
+  }
+
+  .button-group button[type="submit"]:hover {
+    background-color: #2980b9;
+  }
+
+  .button-group button[type="button"] {
+    background-color: #e0e0e0;
+    color: #333;
+  }
+
+  .button-group button[type="button"]:hover {
+    background-color: #cacaca;
+  }
+
+  .form-group .errorlist {
+    color: #e74c3c;
+    font-size: 14px;
+    margin-top: 6px;
+  }
+</style>
+
 <div class="edit-form-container">
-  <h2>Edit {{ object.title }}</h2>
+  <h2>Edit “{{ object.title }}”</h2>
   <form method="post">
     {% csrf_token %}
     {% for field in form %}
@@ -10,18 +99,15 @@
         {{ field.label_tag }}
         {{ field }}
         {% if field.errors %}
-          <div style="color: red;">{{ field.errors }}</div>
+          <div class="errorlist">{{ field.errors }}</div>
         {% endif %}
       </div>
     {% endfor %}
-    
+
     <div class="button-group">
       <button type="button" onclick="window.location.href='{% url 'notes' %}'">Go Back</button>
       <button type="submit">Save Changes</button>
     </div>
   </form>
 </div>
-{% endblock %}
-
-{% block footer %}
 {% endblock %}
