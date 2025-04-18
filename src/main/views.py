@@ -214,6 +214,7 @@ class PDFChatBotView(View):
             {user_message}
 
             answer simply and shortly in 3-5 sentences.
+            answer in the language if content(text) you provided!
 
             Please answer based ONLY on the PDF content above.
             """
@@ -253,6 +254,7 @@ class YoutubeChatBotView(View):
         {user_message}
 
         answer simply and shortly in 3-5 sentences.
+        answer in the language if content(text) you provided!
 
         Please answer based ONLY on the content above.
         """
@@ -280,6 +282,7 @@ class TextChatBotView(View):
         {user_message}
 
         answer simply and shortly in 3-5 sentences.
+        answer in the language if content(text) you provided!
 
 
         Please answer based ONLY on the text above.
@@ -308,6 +311,7 @@ class ArticleChatBotView(View):
         {user_message}
 
         answer simply and shortly in 3-5 sentences.
+        answer in the language if content(text) you provided!
 
         Please answer based ONLY on the text above.
         """
