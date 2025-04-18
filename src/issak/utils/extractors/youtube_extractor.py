@@ -1,13 +1,15 @@
 import yt_dlp
 from youtube_transcript_api import YouTubeTranscriptApi
 
-
-def get_youtube_transcript(video_url:str) -> dict:
+def get_youtube_transcript(video_url: str) -> dict:
     try:
-        ydl_opts = {'quiet': True}
+        ydl_opts = {
+            'quiet': True,
+            'cookiefile': 'cookies.txt',  
+        }
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(video_url, download=False)
-        
+
         video_id = info['id']
         title = info['title']
         thumbnail_url = info['thumbnail']
