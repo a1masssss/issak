@@ -7,6 +7,7 @@ def get_youtube_transcript(video_url: str) -> dict:
         ydl_opts = {
             'quiet': True,
             'verbose': True,
+            'skip_download': True,
             'cookiefile': os.getenv('YOUTUBE_COOKIES_FILE')
         }
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
