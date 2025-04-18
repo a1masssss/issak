@@ -10,6 +10,7 @@ from django.views.generic.edit import FormView
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 from issak.utils.extractors.article_parcer import parse_article
 from issak.utils.extractors.pdf_extractor import extract_pdf_text
@@ -38,6 +39,7 @@ class UploadPageView(View):
         })
 
 # @method_decorator(cache_page(60 * 60 * 2), name="post") #2hr
+
 class UploadPDFView(View):
     def post(self, request, *args, **kwargs):
         file = request.FILES.get("file")  
@@ -187,8 +189,7 @@ class ArticleView(FormView):
             content_type = 'Article'
         )
 
-#class based chat-bots 
-# @method_decorator(cache_page(60 * 60 * 2), name="post") #2hr
+
 class PDFChatBotView(View):
     def post(self, request, *args, **kwargs):
         try:
@@ -213,8 +214,9 @@ class PDFChatBotView(View):
             The user asks:
             {user_message}
 
-            answer simply and shortly in 3-5 sentences.
-            answer in the language if content(text) you provided!
+            Please answer simply and briefly in 3–5 sentences.
+            Respond in the same language as the provided text.
+            Answer only based on the article text above.
 
             Please answer based ONLY on the PDF content above.
             """
@@ -253,8 +255,9 @@ class YoutubeChatBotView(View):
         The user asks:
         {user_message}
 
-        answer simply and shortly in 3-5 sentences.
-        answer in the language if content(text) you provided!
+        Please answer simply and briefly in 3–5 sentences.
+        Respond in the same language as the provided text.
+        Answer only based on the article text above.
 
         Please answer based ONLY on the content above.
         """
@@ -281,8 +284,9 @@ class TextChatBotView(View):
         The user asks:
         {user_message}
 
-        answer simply and shortly in 3-5 sentences.
-        answer in the language if content(text) you provided!
+        Please answer simply and briefly in 3–5 sentences.
+        Respond in the same language as the provided text.
+        Answer only based on the article text above.
 
 
         Please answer based ONLY on the text above.
@@ -310,8 +314,9 @@ class ArticleChatBotView(View):
         The user asks:
         {user_message}
 
-        answer simply and shortly in 3-5 sentences.
-        answer in the language if content(text) you provided!
+        Please answer simply and briefly in 3–5 sentences.
+        Respond in the same language as the provided text.
+        Answer only based on the article text above.
 
         Please answer based ONLY on the text above.
         """
