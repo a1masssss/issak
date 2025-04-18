@@ -1,4 +1,5 @@
 import json
+import concurrent
 import openai
 
 
@@ -78,20 +79,20 @@ class SubmitYouTubeView(FormView):
 
     def form_valid(self, form):
         youtube_url = form.cleaned_data["url"]
-        video = Video(url=youtube_url, user = self.request.user)
+        video = Video(url=youtube_url, user=self.request.user)
         video.save()
-        full_text = get_youtube_transcript(youtube_url) 
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(get_youtube_transcript, youtube_url)
+            full_text = future.result()
+
         summary = summarize_with_openai(full_text)
+
         yt_content = full_text.get('transcript', '')
-        print(yt_content)
         yt_title = full_text.get('youtube_title', '')
         yt_image = full_text.get('image_url', '')
-        print(len(yt_content))
-        print("*" * 100)
 
         self.request.session['youtube_text'] = yt_content 
-
-
 
         if summary.strip():
             self.save_to_db(yt_title, yt_image, summary, youtube_url)
