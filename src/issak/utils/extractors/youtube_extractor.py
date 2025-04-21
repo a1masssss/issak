@@ -19,7 +19,10 @@ def get_youtube_transcript(video_url: str) -> dict:
         'cookiefile': cookie_path,
         'http_headers': {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36'
-            }
+            },
+        # Prevent writing to cookie file
+            'no_cache_dir': True,
+            'no_write_cache': True
         }
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(video_url, download=False)
