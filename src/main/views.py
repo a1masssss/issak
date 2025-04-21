@@ -14,7 +14,7 @@ from django.contrib.auth.decorators import login_required
 
 from issak.utils.extractors.article_parcer import parse_article
 from issak.utils.extractors.pdf_extractor import extract_pdf_text
-from issak.utils.extractors.youtube_extractor import get_youtube_transcript
+from issak.utils.extractors.youtube_extractor import get_youtube_transcript, get_youtube_transcript2
 
 from .models import PDFDocument, SummaryNotes, Video
 from .forms import PDFUploadForm, TextForm, YouTubeForm, ArticleForm
@@ -81,7 +81,7 @@ class SubmitYouTubeView(FormView):
         youtube_url = form.cleaned_data["url"]
         video = Video(url=youtube_url, user = self.request.user)
         video.save()
-        full_text = get_youtube_transcript(youtube_url)
+        full_text = get_youtube_transcript2(youtube_url)
         print(f'ERRORRRRR: {full_text}')
         summary = summarize_with_openai(full_text)
         yt_content = full_text.get('transcript', '')
