@@ -192,7 +192,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'main', 'static'),
 ]
 # Куда складывать все файлы при сборке (в проде)
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR,'static')
 
 
 
@@ -228,4 +228,5 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024  # 50MB limit
 # SITE_DOMAIN = "127.0.0.1:8000"
 # SITE_PROTOCOL = "http"
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# Use the simpler StaticFilesStorage for development
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"

@@ -38,7 +38,7 @@ class UploadPageView(View):
             "article_form": ArticleForm()
         })
 
-# @method_decorator(cache_page(60 * 60 * 2), name="post") #2hr
+
 
 class UploadPDFView(View):
     def post(self, request, *args, **kwargs):
@@ -48,7 +48,6 @@ class UploadPDFView(View):
         file_name = default_storage.save(f"uploads/pdfs/{file.name}", ContentFile(file.read()))
         pdf_doc = PDFDocument(file=file_name, user = request.user)
         pdf_doc.save()
-
         
         text = extract_pdf_text(pdf_doc.file.path)
         pdf_title = generate_title_from_text(text[:1000]) 
@@ -71,8 +70,8 @@ class UploadPDFView(View):
             source_url = source_url,
             content_type = 'File'
         )
-    
-# @method_decorator(cache_page(60 * 60 * 2), name="form_valid") #2hr
+
+
 class SubmitYouTubeView(FormView):
     template_name = "summarizer/upload.html"
     form_class = YouTubeForm
@@ -232,6 +231,7 @@ class PDFChatBotView(View):
         except Exception as e:
 
             return JsonResponse({"error": "An unexpected error occurred"}, status=500)
+        
 class YoutubeChatBotView(View):
     def post(self, request, *args, **kwargs):
         try:

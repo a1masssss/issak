@@ -2,13 +2,14 @@ import yt_dlp
 from youtube_transcript_api import YouTubeTranscriptApi
 import os
 
-def get_youtube_transcript(video_url: str) -> dict:
+def get_youtube_transcript(video_url: str, browser_name='chrome') -> dict:
     try:
+        # Use cookies from browser instead of cookies file
         ydl_opts = {
             'quiet': True,
             'verbose': True,
             'skip_download': True,
-            'cookiefile': os.getenv('YOUTUBE_COOKIES_FILE')
+            'cookies_from_browser': browser_name  # e.g., 'chrome', 'firefox', 'safari', etc.
         }
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(video_url, download=False)
