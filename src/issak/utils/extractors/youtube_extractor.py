@@ -2,14 +2,22 @@ import yt_dlp
 from youtube_transcript_api import YouTubeTranscriptApi
 import os
 
-def get_youtube_transcript(video_url: str, browser_name='chrome') -> dict:
+def get_youtube_transcript(video_url: str) -> dict:
+
+    cookie_path = os.getenv('YOUTUBE_COOKIES_FILE')
+    if os.path.exists(cookie_path):
+        print(f"Cookie file exists at {cookie_path}")
+        print(f"File permissions: {oct(os.stat(cookie_path).st_mode)[-3:]}")
+    else:
+        print(f"Cookie file not found at {cookie_path}")
+        
     try:
-        # Use cookies from browser instead of cookies file
         ydl_opts = {
             'quiet': True,
             'verbose': True,
             'skip_download': True,
-            'cookies_from_browser': browser_name  # e.g., 'chrome', 'firefox', 'safari', etc.
+            'cookiefile': os.getenv('YOUTUBE_COOKIES_FILE'),
+
         }
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(video_url, download=False)
