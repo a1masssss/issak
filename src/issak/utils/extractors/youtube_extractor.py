@@ -83,7 +83,11 @@ def get_youtube_transcript2(video_url: str) -> dict:
         
         # Get transcript
         try:
-            transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=['en', 'ru'])
+            transcript = YouTubeTranscriptApi.get_transcript(
+                video_id, 
+                languages=['en', 'ru'], 
+                cookies=os.getenv('YOUTUBE_COOKIES_FILE'),
+                )
             full_transcript = " ".join([entry['text'] for entry in transcript])
             
             if not full_transcript:
