@@ -10,14 +10,16 @@ def get_youtube_transcript(video_url: str) -> dict:
         print(f"File permissions: {oct(os.stat(cookie_path).st_mode)[-3:]}")
     else:
         print(f"Cookie file not found at {cookie_path}")
-        
+
     try:
         ydl_opts = {
-            'quiet': True,
-            'verbose': True,
-            'skip_download': True,
-            'cookiefile': os.getenv('YOUTUBE_COOKIES_FILE'),
-
+        'quiet': True,
+        'verbose': True,
+        'skip_download': True,
+        'cookiefile': cookie_path,
+        'http_headers': {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36'
+            }
         }
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(video_url, download=False)
